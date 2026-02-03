@@ -1,4 +1,4 @@
-export type PostStatus = 'pending' | 'posted' | 'failed' | 'scheduled';
+export type PostStatus = 'pending' | 'posted' | 'failed' | 'scheduled' | 'success';
 
 export interface PostWithDetails {
   id: number;

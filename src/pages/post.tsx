@@ -1,5 +1,6 @@
 import { useState } from 'react';
-import { Loader2, Send, CheckCircle2, AlertCircle } from 'lucide-react';
+import { useNavigate } from 'react-router-dom';
+import { Loader2, Send, AlertCircle } from 'lucide-react';
 
 import { Button } from '@/components/ui/button';
 import {
@@ -26,18 +27,17 @@ interface PostReelResponse {
 }
 
 export function Post() {
+    const navigate = useNavigate();
     const [caption, setCaption] = useState('');
     const [hookText, setHookText] = useState('');
     const [hashtags, setHashtags] = useState<string[]>([]);
     const [status, setStatus] = useState<SubmitStatus>('idle');
     const [errorMessage, setErrorMessage] = useState<string | null>(null);
-    const [successMessage, setSuccessMessage] = useState<string | null>(null);
 
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
         setStatus('loading');
         setErrorMessage(null);
-        setSuccessMessage(null);
 
         try {
             const session = await authClient.getSession();
@@ -74,19 +74,12 @@ export function Post() {
                 throw new Error(data.message || `Request failed: ${response.statusText}`);
             }
 
-            setStatus('success');
-            setSuccessMessage(data.message || 'Reel posted successfully!');
-
-            // Reset form on success
-            setCaption('');
-            setHookText('');
-            setHashtags([]);
-
-            // Reset status after 5 seconds
-            setTimeout(() => {
-                setStatus('idle');
-                setSuccessMessage(null);
-            }, 5000);
+            if (data.postId) {
+                // Navigate to post status page
+                navigate(`/post/${data.postId}`);
+            } else {
+                throw new Error('No post ID returned from server');
+            }
         } catch (err) {
             setStatus('error');
             setErrorMessage(err instanceof Error ? err.message : 'An unknown error occurred');
@@ -99,7 +92,6 @@ export function Post() {
         setHashtags([]);
         setStatus('idle');
         setErrorMessage(null);
-        setSuccessMessage(null);
     };
 
     return (
@@ -170,14 +162,7 @@ export function Post() {
                             </p>
                         </div>
 
-                        {/* Status Messages */}
-                        {status === 'success' && successMessage && (
-                            <div className="flex items-center gap-2 p-3 rounded-md bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 border border-emerald-500/20">
-                                <CheckCircle2 className="size-4 shrink-0" />
-                                <span className="text-sm">{successMessage}</span>
-                            </div>
-                        )}
-
+                        {/* Error Message */}
                         {status === 'error' && errorMessage && (
                             <div className="flex items-center gap-2 p-3 rounded-md bg-destructive/10 text-destructive border border-destructive/20">
                                 <AlertCircle className="size-4 shrink-0" />

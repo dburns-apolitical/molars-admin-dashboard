@@ -4,6 +4,7 @@ import { Account } from './pages/account';
 import { Auth } from './pages/auth';
 import { Home } from './pages/home';
 import { Post } from './pages/post';
+import { PostStatus } from './pages/post-status';
 
 export default function App() {
   return (
@@ -15,6 +16,7 @@ export default function App() {
       <Route element={<Layout />}>
         <Route path="/" element={<Home />} />
         <Route path="/post" element={<Post />} />
+        <Route path="/post/:postId" element={<PostStatus />} />
         <Route path="/account/:pathname" element={<Account />} />
       </Route>
     </Routes>
