@@ -117,7 +117,30 @@
   * {
     @apply border-border outline-ring/50;
   }
-  body {
-    @apply bg-background text-foreground;
+  html,
+  body,
+  #root {
+    @apply h-full;
   }
+  html {
+    @apply antialiased;
+  }
+  body {
+    @apply bg-background text-foreground min-h-screen;
+  }
+}
+
+/* Dark themed UserButton in mobile nav */
+.user-button-dark [data-slot="user-button"],
+.user-button-dark [data-slot="user-button"] > button {
+  background-color: oklch(0.205 0 0) !important;
+  color: oklch(0.985 0 0) !important;
+  border-color: oklch(1 0 0 / 10%) !important;
+}
+.user-button-dark [data-slot="user-button"] span,
+.user-button-dark [data-slot="user-button"] p {
+  color: oklch(0.985 0 0) !important;
+}
+.user-button-dark [data-slot="user-button"] [data-slot="user-button-email"] {
+  color: oklch(0.708 0 0) !important;
 }

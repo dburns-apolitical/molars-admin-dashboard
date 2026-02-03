@@ -1,12 +1,4 @@
-import {
-    RedirectToSignIn,
-    SignedIn,
-    UserButton,
-} from '@neondatabase/neon-js/auth/react/ui';
-import { MenuIcon, HomeIcon, PenSquareIcon, UserIcon } from 'lucide-react';
-import { Link } from 'react-router-dom';
 import { Badge } from '@/components/ui/badge';
-import { Button } from '@/components/ui/button';
 import {
     Card,
     CardContent,
@@ -14,13 +6,6 @@ import {
     CardHeader,
     CardTitle,
 } from '@/components/ui/card';
-import {
-    Sheet,
-    SheetContent,
-    SheetHeader,
-    SheetTitle,
-    SheetTrigger,
-} from '@/components/ui/sheet';
 import { Skeleton } from '@/components/ui/skeleton';
 import {
     Table,
@@ -174,54 +159,7 @@ function RankedItemsTable({ items, label }: { items: RankedItem[]; label: string
     );
 }
 
-function MobileNav() {
-    return (
-        <Sheet>
-            <SheetTrigger asChild>
-                <Button variant="ghost" size="icon">
-                    <MenuIcon className="size-5" />
-                    <span className="sr-only">Open menu</span>
-                </Button>
-            </SheetTrigger>
-            <SheetContent side="right" className="w-72">
-                <SheetHeader className="border-b pb-4">
-                    <SheetTitle>Menu</SheetTitle>
-                </SheetHeader>
-                <nav className="flex flex-col gap-1 py-4">
-                    <Link
-                        to="/"
-                        className="flex items-center gap-3 rounded-lg px-3 py-2.5 text-sm font-medium transition-colors hover:bg-accent"
-                    >
-                        <HomeIcon className="size-4" />
-                        Dashboard
-                    </Link>
-                    <Link
-                        to="/post"
-                        className="flex items-center gap-3 rounded-lg px-3 py-2.5 text-sm font-medium transition-colors hover:bg-accent"
-                    >
-                        <PenSquareIcon className="size-4" />
-                        Post
-                    </Link>
-                    <Link
-                        to="/account/settings"
-                        className="flex items-center gap-3 rounded-lg px-3 py-2.5 text-sm font-medium transition-colors hover:bg-accent"
-                    >
-                        <UserIcon className="size-4" />
-                        Account
-                    </Link>
-                </nav>
-                <div className="mt-auto border-t pt-4">
-                    <div className="flex items-center gap-3 px-3">
-                        <UserButton />
-                        <span className="text-sm text-muted-foreground">Sign out</span>
-                    </div>
-                </div>
-            </SheetContent>
-        </Sheet>
-    );
-}
-
-function Dashboard() {
+export function Home() {
     const { data, isLoading, error, refetch } = useStats();
 
     if (error) {
@@ -242,7 +180,7 @@ function Dashboard() {
         <div className="space-y-10 md:space-y-12">
             {/* Metrics Section */}
             <section>
-                <h2 className="text-lg font-semibold mb-5">Views Overview</h2>
+                <h2 className="text-lg font-semibold m-5">Views Overview</h2>
                 <div className="grid gap-4 md:grid-cols-3">
                     {isLoading ? (
                         <>
@@ -388,29 +326,5 @@ function Dashboard() {
                 )}
             </section>
         </div>
-    );
-}
-
-export function Home() {
-    return (
-        <>
-            <SignedIn>
-                <div className="min-h-screen bg-background">
-                    {/* Header */}
-                    <header className="sticky top-0 z-50 border-b bg-background/95 backdrop-blur supports-backdrop-filter:bg-background/60">
-                        <div className="container mx-auto px-4 py-4 flex items-center justify-between">
-                            <h1 className="text-xl font-bold tracking-tight">Molars Dashboard</h1>
-                            <MobileNav />
-                        </div>
-                    </header>
-
-                    {/* Main Content */}
-                    <main className="container mx-auto px-4 py-8">
-                        <Dashboard />
-                    </main>
-                </div>
-            </SignedIn>
-            <RedirectToSignIn />
-        </>
     );
 }
