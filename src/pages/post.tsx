@@ -15,6 +15,16 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { TagInput } from '@/components/ui/tag-input';
 import { Textarea } from '@/components/ui/textarea';
+import {
+    AlertDialog,
+    AlertDialogContent,
+    AlertDialogHeader,
+    AlertDialogTitle,
+    AlertDialogDescription,
+    AlertDialogFooter,
+    AlertDialogCancel,
+} from '@/components/ui/alert-dialog';
+import { Checkbox } from '@/components/ui/checkbox';
 import { API_BASE_URL } from '@/lib/api';
 import { authClient } from '@/lib/auth';
 
@@ -33,9 +43,12 @@ export function Post() {
     const [hashtags, setHashtags] = useState<string[]>([]);
     const [status, setStatus] = useState<SubmitStatus>('idle');
     const [errorMessage, setErrorMessage] = useState<string | null>(null);
+    const [shareToFeed, setShareToFeed] = useState(false);
+    const [postToMainAccount, setPostToMainAccount] = useState(false);
+    const [showConfirmDialog, setShowConfirmDialog] = useState(false);
+    const [confirmText, setConfirmText] = useState('');
 
-    const handleSubmit = async (e: React.FormEvent) => {
-        e.preventDefault();
+    const submitPost = async () => {
         setStatus('loading');
         setErrorMessage(null);
 
@@ -48,7 +61,6 @@ export function Post() {
 
             const body: Record<string, unknown> = {};
 
-            // Only include fields that have values
             if (caption.trim()) {
                 body.caption = caption.trim();
             }
@@ -58,6 +70,9 @@ export function Post() {
             if (hashtags.length > 0) {
                 body.hashtags = hashtags;
             }
+
+            body.shareToFeed = shareToFeed;
+            body.accountId = postToMainAccount ? 1 : 2;
 
             const response = await fetch(`${API_BASE_URL}/api/post-reel`, {
                 method: 'POST',
@@ -75,7 +90,6 @@ export function Post() {
             }
 
             if (data.postId) {
-                // Navigate to post status page
                 navigate(`/post/${data.postId}`);
             } else {
                 throw new Error('No post ID returned from server');
@@ -86,10 +100,31 @@ export function Post() {
         }
     };
 
+    const handleSubmit = async (e: React.FormEvent) => {
+        e.preventDefault();
+
+        if (postToMainAccount) {
+            setShowConfirmDialog(true);
+            return;
+        }
+
+        await submitPost();
+    };
+
+    const handleConfirmSubmit = async () => {
+        setShowConfirmDialog(false);
+        setConfirmText('');
+        await submitPost();
+    };
+
     const resetForm = () => {
         setCaption('');
         setHookText('');
         setHashtags([]);
+        setShareToFeed(false);
+        setPostToMainAccount(false);
+        setShowConfirmDialog(false);
+        setConfirmText('');
         setStatus('idle');
         setErrorMessage(null);
     };
@@ -162,6 +197,33 @@ export function Post() {
                             </p>
                         </div>
 
+                        {/* Post Options */}
+                        <div className="space-y-4">
+                            <Label>Post Options</Label>
+                            <div className="flex items-center gap-2">
+                                <Checkbox
+                                    id="shareToFeed"
+                                    checked={shareToFeed}
+                                    onCheckedChange={(checked) => setShareToFeed(checked === true)}
+                                    disabled={status === 'loading'}
+                                />
+                                <Label htmlFor="shareToFeed" className="font-normal cursor-pointer">
+                                    Share to main grid
+                                </Label>
+                            </div>
+                            <div className="flex items-center gap-2">
+                                <Checkbox
+                                    id="postToMainAccount"
+                                    checked={postToMainAccount}
+                                    onCheckedChange={(checked) => setPostToMainAccount(checked === true)}
+                                    disabled={status === 'loading'}
+                                />
+                                <Label htmlFor="postToMainAccount" className="font-normal cursor-pointer">
+                                    Post to main account
+                                </Label>
+                            </div>
+                        </div>
+
                         {/* Error Message */}
                         {status === 'error' && errorMessage && (
                             <div className="flex items-center gap-2 p-3 rounded-md bg-destructive/10 text-destructive border border-destructive/20">
@@ -199,6 +261,35 @@ export function Post() {
                     </CardFooter>
                 </form>
             </Card>
+
+            <AlertDialog open={showConfirmDialog} onOpenChange={(open) => {
+                setShowConfirmDialog(open);
+                if (!open) setConfirmText('');
+            }}>
+                <AlertDialogContent>
+                    <AlertDialogHeader>
+                        <AlertDialogTitle>Confirm Main Account Post</AlertDialogTitle>
+                        <AlertDialogDescription>
+                            You are about to post to the <strong>main account</strong>. This action cannot be undone. Type <strong>CONFIRM</strong> below to proceed.
+                        </AlertDialogDescription>
+                    </AlertDialogHeader>
+                    <Input
+                        value={confirmText}
+                        onChange={(e) => setConfirmText(e.target.value)}
+                        placeholder="Type CONFIRM to proceed"
+                        autoFocus
+                    />
+                    <AlertDialogFooter>
+                        <AlertDialogCancel>Cancel</AlertDialogCancel>
+                        <Button
+                            onClick={handleConfirmSubmit}
+                            disabled={confirmText.toLowerCase() !== 'confirm'}
+                        >
+                            Post to Main Account
+                        </Button>
+                    </AlertDialogFooter>
+                </AlertDialogContent>
+            </AlertDialog>
         </div>
     );
 }
