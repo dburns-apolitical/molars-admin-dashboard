@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Loader2, Send, AlertCircle } from 'lucide-react';
 
@@ -11,10 +11,17 @@ import {
     CardHeader,
     CardTitle,
 } from '@/components/ui/card';
+import { ComboboxInput } from '@/components/ui/combobox-input';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
+import {
+    Select,
+    SelectContent,
+    SelectItem,
+    SelectTrigger,
+    SelectValue,
+} from '@/components/ui/select';
 import { TagInput } from '@/components/ui/tag-input';
-import { Textarea } from '@/components/ui/textarea';
 import {
     AlertDialog,
     AlertDialogContent,
@@ -47,6 +54,41 @@ export function Post() {
     const [postToMainAccount, setPostToMainAccount] = useState(false);
     const [showConfirmDialog, setShowConfirmDialog] = useState(false);
     const [confirmText, setConfirmText] = useState('');
+    const [videoTitle, setVideoTitle] = useState('random');
+    const [hookSuggestions, setHookSuggestions] = useState<string[]>([]);
+    const [captionSuggestions, setCaptionSuggestions] = useState<string[]>([]);
+    const [videoOptions, setVideoOptions] = useState<string[]>([]);
+
+    useEffect(() => {
+        const fetchSuggestions = async () => {
+            const session = await authClient.getSession();
+            const token = session?.data?.session?.token;
+            if (!token) return;
+
+            const headers = { Authorization: `Bearer ${token}` };
+
+            const [captionsRes, hooksRes, videosRes] = await Promise.allSettled([
+                fetch(`${API_BASE_URL}/api/captions`, { headers }),
+                fetch(`${API_BASE_URL}/api/hooks`, { headers }),
+                fetch(`${API_BASE_URL}/api/videos`, { headers }),
+            ]);
+
+            if (captionsRes.status === 'fulfilled' && captionsRes.value.ok) {
+                const data = await captionsRes.value.json();
+                setCaptionSuggestions(data.captions.map((c: { text: string }) => c.text));
+            }
+            if (hooksRes.status === 'fulfilled' && hooksRes.value.ok) {
+                const data = await hooksRes.value.json();
+                setHookSuggestions(data.hooks.map((h: { text: string }) => h.text));
+            }
+            if (videosRes.status === 'fulfilled' && videosRes.value.ok) {
+                const data = await videosRes.value.json();
+                setVideoOptions(data.videos);
+            }
+        };
+
+        fetchSuggestions();
+    }, []);
 
     const submitPost = async () => {
         setStatus('loading');
@@ -69,6 +111,10 @@ export function Post() {
             }
             if (hashtags.length > 0) {
                 body.hashtags = hashtags;
+            }
+
+            if (videoTitle !== 'random') {
+                body.videoTitle = videoTitle;
             }
 
             body.shareToFeed = shareToFeed;
@@ -121,6 +167,7 @@ export function Post() {
         setCaption('');
         setHookText('');
         setHashtags([]);
+        setVideoTitle('random');
         setShareToFeed(false);
         setPostToMainAccount(false);
         setShowConfirmDialog(false);
@@ -148,13 +195,38 @@ export function Post() {
                     </CardHeader>
 
                     <CardContent className="space-y-8">
+                        {/* Video Select */}
+                        <div className="space-y-2">
+                            <Label htmlFor="video">Video</Label>
+                            <Select
+                                value={videoTitle}
+                                onValueChange={setVideoTitle}
+                                disabled={status === 'loading'}
+                            >
+                                <SelectTrigger id="video">
+                                    <SelectValue />
+                                </SelectTrigger>
+                                <SelectContent>
+                                    <SelectItem value="random">Random</SelectItem>
+                                    {videoOptions.map((filename) => (
+                                        <SelectItem key={filename} value={filename}>
+                                            {filename}
+                                        </SelectItem>
+                                    ))}
+                                </SelectContent>
+                            </Select>
+                            <p className="text-xs text-muted-foreground">
+                                Choose a specific video or use a random one.
+                            </p>
+                        </div>
+
                         {/* Hook Text Input */}
                         <div className="space-y-2">
                             <Label htmlFor="hookText" className="mb-5!">Hook Text</Label>
-                            <Input
-                                id="hookText"
+                            <ComboboxInput
                                 value={hookText}
-                                onChange={(e) => setHookText(e.target.value)}
+                                onValueChange={setHookText}
+                                options={hookSuggestions}
                                 placeholder="Hot Mulligan meets The 1975"
                                 disabled={status === 'loading'}
                                 maxLength={500}
@@ -167,19 +239,17 @@ export function Post() {
                         {/* Caption Input */}
                         <div className="space-y-2">
                             <Label htmlFor="caption">Caption</Label>
-                            <Textarea
-                                id="caption"
+                            <ComboboxInput
                                 value={caption}
-                                onChange={(e) => setCaption(e.target.value)}
+                                onValueChange={setCaption}
+                                options={captionSuggestions}
                                 placeholder="Can you name a better emo band?"
                                 disabled={status === 'loading'}
                                 maxLength={2200}
-                                rows={4}
                             />
-                            <div className="flex justify-between text-xs text-muted-foreground">
-                                <span>The post caption. Leave empty for a random caption.</span>
-                                <span>{caption.length}/2200</span>
-                            </div>
+                            <p className="text-xs text-muted-foreground">
+                                The post caption. Leave empty for a random caption.
+                            </p>
                         </div>
 
                         {/* Hashtags Input */}
