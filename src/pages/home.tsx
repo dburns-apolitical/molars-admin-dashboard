@@ -180,7 +180,7 @@ export function Home() {
         <div className="space-y-10 md:space-y-12">
             {/* Metrics Section */}
             <section>
-                <h2 className="text-lg font-semibold m-5">Views Overview</h2>
+                <h2 className="text-lg font-semibold mb-5">Views Overview</h2>
                 <div className="grid gap-4 md:grid-cols-3">
                     {isLoading ? (
                         <>

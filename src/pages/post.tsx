@@ -147,10 +147,10 @@ export function Post() {
                         </CardDescription>
                     </CardHeader>
 
-                    <CardContent className="space-y-6">
+                    <CardContent className="space-y-8">
                         {/* Hook Text Input */}
                         <div className="space-y-2">
-                            <Label htmlFor="hookText">Hook Text</Label>
+                            <Label htmlFor="hookText" className="mb-5!">Hook Text</Label>
                             <Input
                                 id="hookText"
                                 value={hookText}
