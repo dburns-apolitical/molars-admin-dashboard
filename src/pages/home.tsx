@@ -1,3 +1,4 @@
+import { useState } from 'react';
 import { Badge } from '@/components/ui/badge';
 import {
     Card,
@@ -6,6 +7,13 @@ import {
     CardHeader,
     CardTitle,
 } from '@/components/ui/card';
+import {
+    Select,
+    SelectContent,
+    SelectItem,
+    SelectTrigger,
+    SelectValue,
+} from '@/components/ui/select';
 import { Skeleton } from '@/components/ui/skeleton';
 import {
     Table,
@@ -58,6 +66,76 @@ function DeltaIndicator({ delta }: { delta: number | null }) {
         <span className={`text-sm font-medium ${isPositive ? 'text-emerald-500' : 'text-rose-500'}`}>
             {isPositive ? '↑' : '↓'} {Math.abs(delta).toFixed(1)}%
         </span>
+    );
+}
+
+function LeaderboardCard({
+    title,
+    items,
+    valueKey,
+    formatValue = (v: number) => formatNumber(v),
+    isLoading: loading,
+}: {
+    title: string;
+    items: { name: string; [key: string]: string | number }[];
+    valueKey: string;
+    formatValue?: (value: number) => string;
+    isLoading: boolean;
+}) {
+    if (loading) {
+        return (
+            <Card>
+                <CardHeader className="pb-3">
+                    <CardTitle className="text-base">{title}</CardTitle>
+                </CardHeader>
+                <CardContent className="space-y-3">
+                    {Array.from({ length: 4 }).map((_, i) => (
+                        <div key={i} className="space-y-1.5">
+                            <div className="flex justify-between text-sm">
+                                <Skeleton className="h-4 w-20" />
+                                <Skeleton className="h-4 w-12" />
+                            </div>
+                            <Skeleton className="h-2 w-full rounded-full" />
+                        </div>
+                    ))}
+                </CardContent>
+            </Card>
+        );
+    }
+
+    const maxValue = Math.max(...items.map((item) => Number(item[valueKey]) || 0), 1);
+
+    return (
+        <Card>
+            <CardHeader className="pb-3">
+                <CardTitle className="text-base">{title}</CardTitle>
+            </CardHeader>
+            <CardContent className="space-y-3">
+                {items.map((item, index) => {
+                    const value = Number(item[valueKey]) || 0;
+                    const percentage = (value / maxValue) * 100;
+                    return (
+                        <div key={index} className="space-y-1.5">
+                            <div className="flex justify-between text-sm">
+                                <span className="font-medium">{item.name}</span>
+                                <span className="tabular-nums text-muted-foreground">
+                                    {formatValue(value)}
+                                </span>
+                            </div>
+                            <div className="h-2 w-full rounded-full bg-primary/20">
+                                <div
+                                    className="h-full rounded-full bg-primary transition-all"
+                                    style={{ width: `${percentage}%` }}
+                                />
+                            </div>
+                        </div>
+                    );
+                })}
+                {items.length === 0 && (
+                    <p className="text-sm text-muted-foreground text-center py-4">No data available</p>
+                )}
+            </CardContent>
+        </Card>
     );
 }
 
@@ -160,7 +238,10 @@ function RankedItemsTable({ items, label }: { items: RankedItem[]; label: string
 }
 
 export function Home() {
-    const { data, isLoading, error, refetch } = useStats();
+    const [accountId, setAccountId] = useState<string>('all');
+    const { data, isLoading, error, refetch } = useStats(
+        accountId === 'all' ? null : Number(accountId)
+    );
 
     if (error) {
         return (
@@ -178,6 +259,39 @@ export function Home() {
 
     return (
         <div className="space-y-10 md:space-y-12">
+            {/* Account Filter */}
+            <div className="flex items-center justify-between">
+                <h1 className="text-2xl font-bold tracking-tight">Dashboard</h1>
+                <Select value={accountId} onValueChange={setAccountId}>
+                    <SelectTrigger className="w-[220px]">
+                        <SelectValue />
+                    </SelectTrigger>
+                    <SelectContent>
+                        <SelectItem value="all">All Accounts</SelectItem>
+                        <SelectItem value="1">Molars UK (Main Account)</SelectItem>
+                        <SelectItem value="2">MLRS (Backup Account)</SelectItem>
+                    </SelectContent>
+                </Select>
+            </div>
+
+            {/* Leaderboards */}
+            <section>
+                <div className="grid gap-4 md:grid-cols-2">
+                    <LeaderboardCard
+                        title="Posts by User"
+                        items={data?.userLeaderboard ?? []}
+                        valueKey="posts"
+                        isLoading={isLoading}
+                    />
+                    <LeaderboardCard
+                        title="Views per Video"
+                        items={data?.userViewsPerVideo ?? []}
+                        valueKey="viewsPerVideo"
+                        isLoading={isLoading}
+                    />
+                </div>
+            </section>
+
             {/* Metrics Section */}
             <section>
                 <h2 className="text-lg font-semibold mb-5">Views Overview</h2>

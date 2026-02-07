@@ -45,4 +45,6 @@ export interface DashboardStats {
   topHooks: RankedItem[];
   topHashtagCombinations: RankedItem[];
   topVideos: RankedItem[];
+  userLeaderboard: { name: string; posts: number }[];
+  userViewsPerVideo: { name: string; viewsPerVideo: number }[];
 }

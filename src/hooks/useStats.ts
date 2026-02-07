@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useCallback } from 'react';
 import { API_BASE_URL } from '@/lib/api';
 import { authClient } from '@/lib/auth';
 import type { DashboardStats } from '@/types/dashboard';
@@ -10,23 +10,27 @@ interface UseStatsResult {
   refetch: () => void;
 }
 
-export function useStats(): UseStatsResult {
+export function useStats(accountId: number | null = null): UseStatsResult {
   const [data, setData] = useState<DashboardStats | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<Error | null>(null);
 
-  const fetchStats = async () => {
+  const fetchStats = useCallback(async () => {
     setIsLoading(true);
     setError(null);
 
     try {
       const session = await authClient.getSession();
-      
+
       if (!session?.data?.session?.token) {
         throw new Error('Not authenticated');
       }
 
-      const response = await fetch(`${API_BASE_URL}/api/stats`, {
+      const url = accountId
+        ? `${API_BASE_URL}/api/stats?accountId=${accountId}`
+        : `${API_BASE_URL}/api/stats`;
+
+      const response = await fetch(url, {
         headers: {
           'Authorization': `Bearer ${session.data.session.token}`,
           'Content-Type': 'application/json',
@@ -44,11 +48,11 @@ export function useStats(): UseStatsResult {
     } finally {
       setIsLoading(false);
     }
-  };
+  }, [accountId]);
 
   useEffect(() => {
     fetchStats();
-  }, []);
+  }, [fetchStats]);
 
   return { data, isLoading, error, refetch: fetchStats };
 }
