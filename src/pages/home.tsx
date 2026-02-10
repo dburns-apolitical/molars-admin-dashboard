@@ -343,6 +343,53 @@ export function Home() {
                 </div>
             </section>
 
+            {/* Post Count Metrics */}
+            <section>
+                <h2 className="text-lg font-semibold mb-5">Number of Posts</h2>
+                <div className="grid gap-4 md:grid-cols-3">
+                    {isLoading ? (
+                        <>
+                            <MetricsCardSkeleton />
+                            <MetricsCardSkeleton />
+                            <MetricsCardSkeleton />
+                        </>
+                    ) : (
+                        <>
+                            <Card>
+                                <CardHeader className="pb-2">
+                                    <CardDescription>All Time</CardDescription>
+                                </CardHeader>
+                                <CardContent>
+                                    <div className="text-3xl font-bold tracking-tight">
+                                        {formatNumber(data?.postCountMetrics.allTime ?? 0)}
+                                    </div>
+                                </CardContent>
+                            </Card>
+                            <Card>
+                                <CardHeader className="pb-2">
+                                    <CardDescription>Last 28 Days</CardDescription>
+                                </CardHeader>
+                                <CardContent>
+                                    <div className="text-3xl font-bold tracking-tight">
+                                        {formatNumber(data?.postCountMetrics.last28Days ?? 0)}
+                                    </div>
+                                </CardContent>
+                            </Card>
+                            <Card>
+                                <CardHeader className="pb-2">
+                                    <CardDescription>Last 7 Days</CardDescription>
+                                </CardHeader>
+                                <CardContent>
+                                    <div className="text-3xl font-bold tracking-tight">
+                                        {formatNumber(data?.postCountMetrics.last7Days ?? 0)}
+                                    </div>
+                                </CardContent>
+                            </Card>
+                        </>
+                    )}
+                </div>
+            </section>
+
             {/* Most Recent Post */}
             <section>
                 <h2 className="text-lg font-semibold mb-5">Most Recent Post</h2>
