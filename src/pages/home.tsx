@@ -77,7 +77,7 @@ function LeaderboardCard({
     isLoading: loading,
 }: {
     title: string;
-    items: { name: string; [key: string]: string | number }[];
+    items: { name: string;[key: string]: string | number }[];
     valueKey: string;
     formatValue?: (value: number) => string;
     isLoading: boolean;
@@ -117,7 +117,7 @@ function LeaderboardCard({
                     return (
                         <div key={index} className="space-y-1.5">
                             <div className="flex justify-between text-sm">
-                                <span className="font-medium">{item.name}</span>
+                                <span className="font-medium">{index === 0 ? '🥇' : index === 1 ? '🥈' : '💩'} {item.name}</span>
                                 <span className="tabular-nums text-muted-foreground">
                                     {formatValue(value)}
                                 </span>
@@ -276,6 +276,7 @@ export function Home() {
 
             {/* Leaderboards */}
             <section>
+                <h2 className="text-lg font-semibold mb-5">Leaderboards</h2>
                 <div className="grid gap-4 md:grid-cols-2">
                     <LeaderboardCard
                         title="Posts by User"
