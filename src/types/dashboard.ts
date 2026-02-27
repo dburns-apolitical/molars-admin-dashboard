@@ -5,6 +5,8 @@ export interface PostWithDetails {
   instagram_post_id: string | null;
   views: number | null;
   status: PostStatus;
+  account_id: number | null;
+  account_name: string | null;
   created_at: Date;
   updated_at: Date;
   video: {

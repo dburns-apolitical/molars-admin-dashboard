@@ -45,16 +45,44 @@ function formatDate(date: Date | string): string {
     });
 }
 
-function getStatusVariant(status: PostStatus): 'default' | 'secondary' | 'destructive' | 'outline' {
+function getRecencyInfo(date: Date | string): { label: string; variant: 'default' | 'secondary' | 'destructive'; className: string } {
+    const now = new Date();
+    const posted = new Date(date);
+    const diffMs = now.getTime() - posted.getTime();
+    const diffMins = Math.floor(diffMs / 60000);
+    const diffHours = Math.floor(diffMs / 3600000);
+    const diffDays = Math.floor(diffMs / 86400000);
+
+    const isToday = posted.toDateString() === now.toDateString();
+
+    let label: string;
+    if (diffMins < 1) label = 'Just now';
+    else if (diffMins < 60) label = `${diffMins}m ago`;
+    else if (diffHours < 24) label = `${diffHours}h ago`;
+    else if (diffDays === 1) label = '1d ago';
+    else label = `${diffDays}d ago`;
+
+    if (isToday && diffHours < 2) {
+        return { label, variant: 'default', className: 'bg-emerald-500 hover:bg-emerald-500 text-white' };
+    } else if (isToday) {
+        return { label, variant: 'secondary', className: 'bg-amber-500/20 text-amber-600 dark:text-amber-400 border-amber-500/30' };
+    } else {
+        return { label, variant: 'destructive', className: '' };
+    }
+}
+
+function getStatusStyle(status: PostStatus): { variant: 'default' | 'secondary' | 'destructive' | 'outline'; className: string } {
     switch (status) {
         case 'posted':
-            return 'default';
+        case 'success':
+            return { variant: 'default', className: 'bg-emerald-500 hover:bg-emerald-500 text-white' };
+        case 'pending':
         case 'scheduled':
-            return 'secondary';
+            return { variant: 'secondary', className: 'bg-amber-500/20 text-amber-600 dark:text-amber-400 border-amber-500/30' };
         case 'failed':
-            return 'destructive';
+            return { variant: 'destructive', className: '' };
         default:
-            return 'outline';
+            return { variant: 'outline', className: '' };
     }
 }
 
@@ -173,30 +201,34 @@ function PostCard({ post, highlight = false }: { post: PostWithDetails; highligh
         <Card className={highlight ? 'border-primary/50 bg-primary/5' : ''}>
             <CardHeader className="pb-3">
                 <div className="flex items-start justify-between gap-2">
-                    <CardTitle className="text-base line-clamp-1">{post.video.title}</CardTitle>
-                    <Badge variant={getStatusVariant(post.status)}>{post.status}</Badge>
+                    <CardTitle className="text-base line-clamp-1">
+                        {post.video.title}
+                        {post.account_name && (
+                            <span className="text-muted-foreground font-normal text-sm"> [{post.account_name}]</span>
+                        )}
+                    </CardTitle>
+                    {(() => {
+                        const statusStyle = getStatusStyle(post.status);
+                        return <Badge variant={statusStyle.variant} className={statusStyle.className}>{post.status}</Badge>;
+                    })()}
                 </div>
                 <CardDescription className="line-clamp-2">{post.hook.text}</CardDescription>
             </CardHeader>
             <CardContent>
                 <div className="flex items-center justify-between text-sm">
-                    <span className="text-muted-foreground">{formatDate(post.created_at)}</span>
+                    <div className="flex items-center gap-2">
+                        <span className="text-muted-foreground">{formatDate(post.created_at)}</span>
+                        {(() => {
+                            const recency = getRecencyInfo(post.created_at);
+                            return (
+                                <Badge variant={recency.variant} className={`text-xs ${recency.className}`}>
+                                    {recency.label}
+                                </Badge>
+                            );
+                        })()}
+                    </div>
                     <span className="font-semibold">{formatNumber(post.views ?? 0)} views</span>
                 </div>
-                {post.hashtags.length > 0 && (
-                    <div className="flex flex-wrap gap-1 mt-3">
-                        {post.hashtags.slice(0, 3).map((tag, i) => (
-                            <Badge key={i} variant="secondary" className="text-xs">
-                                #{tag}
-                            </Badge>
-                        ))}
-                        {post.hashtags.length > 3 && (
-                            <Badge variant="outline" className="text-xs">
-                                +{post.hashtags.length - 3}
-                            </Badge>
-                        )}
-                    </div>
-                )}
             </CardContent>
         </Card>
     );
