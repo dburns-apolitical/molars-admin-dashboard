@@ -3,7 +3,7 @@ import {
   SignedIn,
   UserButton,
 } from '@neondatabase/neon-js/auth/react/ui';
-import { MenuIcon, HomeIcon, PenSquareIcon } from 'lucide-react';
+import { MenuIcon, HomeIcon, PenSquareIcon, ListIcon } from 'lucide-react';
 import { Link, Outlet, useLocation } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 import {
@@ -57,6 +57,18 @@ function MobileNav() {
             >
               <PenSquareIcon className="size-5" />
               Post
+            </Link>
+          </SheetClose>
+          <SheetClose asChild>
+            <Link
+              to="/content"
+              className={`flex items-center gap-4 rounded-xl px-4 py-5 text-base font-medium transition-colors ${isActive('/content')
+                ? 'bg-accent text-accent-foreground'
+                : 'hover:bg-accent/50'
+                }`}
+            >
+              <ListIcon className="size-5" />
+              Content
             </Link>
           </SheetClose>
         </nav>
