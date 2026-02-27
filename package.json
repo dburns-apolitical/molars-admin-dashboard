@@ -11,6 +11,7 @@
   },
   "dependencies": {
     "@neondatabase/neon-js": "0.2.0-beta.1",
+    "@tailwindcss/typography": "^0.5.19",
     "class-variance-authority": "^0.7.1",
     "clsx": "^2.1.1",
     "cmdk": "^1.1.1",
@@ -18,6 +19,7 @@
     "radix-ui": "^1.4.3",
     "react": "^19.2.0",
     "react-dom": "^19.2.0",
+    "react-markdown": "^10.1.0",
     "react-router-dom": "^7.13.0",
     "tailwind-merge": "^3.4.0"
   },

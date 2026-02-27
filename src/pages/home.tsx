@@ -1,4 +1,7 @@
 import { useState } from 'react';
+import { Link } from 'react-router-dom';
+import Markdown from 'react-markdown';
+import { prepareMarkdown } from '@/lib/utils';
 import { Badge } from '@/components/ui/badge';
 import {
     Card,
@@ -325,6 +328,63 @@ export function Home() {
                 </div>
             </section>
 
+                        {/* Most Recent Post */}
+                        <section>
+                <h2 className="text-lg font-semibold mb-5">Most Recent Post</h2>
+                {isLoading ? (
+                    <PostCardSkeleton />
+                ) : data?.mostRecentPost ? (
+                    <PostCard post={data.mostRecentPost} highlight />
+                ) : (
+                    <Card>
+                        <CardContent className="flex items-center justify-center h-32 text-muted-foreground">
+                            No posts yet
+                        </CardContent>
+                    </Card>
+                )}
+            </section>
+
+            {/* Latest Evaluation */}
+            {isLoading ? (
+                <section>
+                    <h2 className="text-lg font-semibold mb-5">Latest Evaluation</h2>
+                    <Card>
+                        <CardContent className="pt-6 space-y-2">
+                            <Skeleton className="h-4 w-full" />
+                            <Skeleton className="h-4 w-full" />
+                            <Skeleton className="h-4 w-2/3" />
+                        </CardContent>
+                    </Card>
+                </section>
+            ) : data?.latestEvaluation ? (
+                <section>
+                    <h2 className="text-lg font-semibold mb-5">Latest Evaluation</h2>
+                    <Card>
+                        <CardHeader className="pb-3">
+                            <CardDescription>
+                                {formatDate(data.latestEvaluation.created_at)}
+                            </CardDescription>
+                        </CardHeader>
+                        <CardContent>
+                            <div className="relative">
+                                <div className="prose prose-sm dark:prose-invert max-w-none max-h-[400px] overflow-hidden">
+                                    <Markdown>{prepareMarkdown(data.latestEvaluation.response)}</Markdown>
+                                </div>
+                                {data.latestEvaluation.response.length > 400 && (
+                                    <div className="absolute bottom-0 left-0 right-0 h-16 bg-gradient-to-t from-card to-transparent" />
+                                )}
+                            </div>
+                            <Link
+                                to="/evaluations?open=latest"
+                                className="inline-block mt-3 text-sm font-medium text-primary hover:underline"
+                            >
+                                Read more →
+                            </Link>
+                        </CardContent>
+                    </Card>
+                </section>
+            ) : null}
+
             {/* Metrics Section */}
             <section>
                 <h2 className="text-lg font-semibold mb-5">Views Overview</h2>
@@ -421,22 +481,6 @@ export function Home() {
                         </>
                     )}
                 </div>
-            </section>
-
-            {/* Most Recent Post */}
-            <section>
-                <h2 className="text-lg font-semibold mb-5">Most Recent Post</h2>
-                {isLoading ? (
-                    <PostCardSkeleton />
-                ) : data?.mostRecentPost ? (
-                    <PostCard post={data.mostRecentPost} highlight />
-                ) : (
-                    <Card>
-                        <CardContent className="flex items-center justify-center h-32 text-muted-foreground">
-                            No posts yet
-                        </CardContent>
-                    </Card>
-                )}
             </section>
 
             {/* Top Posts */}

@@ -45,6 +45,16 @@ export interface PostCountMetrics {
   last7Days: number;
 }
 
+export interface Evaluation {
+  id: number;
+  response: string;
+  model: string;
+  input_tokens: number | null;
+  output_tokens: number | null;
+  triggered_by: string;
+  created_at: string;
+}
+
 export interface DashboardStats {
   topPosts: PostWithDetails[];
   mostRecentPost: PostWithDetails | null;
@@ -56,4 +66,5 @@ export interface DashboardStats {
   topVideos: RankedItem[];
   userLeaderboard: { name: string; posts: number }[];
   userViewsPerVideo: { name: string; viewsPerVideo: number }[];
+  latestEvaluation: Evaluation | null;
 }
