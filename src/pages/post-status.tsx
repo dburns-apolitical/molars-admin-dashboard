@@ -1,5 +1,5 @@
 import { Link, useParams } from 'react-router-dom';
-import { ArrowLeft, Loader2, Clock, CheckCircle2, XCircle } from 'lucide-react';
+import { ArrowLeft, ArrowRight, Loader2, Clock, CheckCircle2, XCircle } from 'lucide-react';
 
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
@@ -76,11 +76,17 @@ export function PostStatus() {
   if (error) {
     return (
       <div className="max-w-2xl mx-auto">
-        <div className="mb-6">
+        <div className="mb-6 flex items-center justify-between">
           <Button variant="ghost" asChild>
             <Link to="/">
               <ArrowLeft className="mr-2 size-4" />
               Back to Dashboard
+            </Link>
+          </Button>
+          <Button variant="ghost" asChild>
+            <Link to="/post">
+              New Post
+              <ArrowRight className="ml-2 size-4" />
             </Link>
           </Button>
         </div>
@@ -100,11 +106,17 @@ export function PostStatus() {
   if (isLoading || !data) {
     return (
       <div className="max-w-2xl mx-auto">
-        <div className="mb-6">
+        <div className="mb-6 flex items-center justify-between">
           <Button variant="ghost" asChild>
             <Link to="/">
               <ArrowLeft className="mr-2 size-4" />
               Back to Dashboard
+            </Link>
+          </Button>
+          <Button variant="ghost" asChild>
+            <Link to="/post">
+              New Post
+              <ArrowRight className="ml-2 size-4" />
             </Link>
           </Button>
         </div>
@@ -118,12 +130,18 @@ export function PostStatus() {
 
   return (
     <div className="max-w-2xl mx-auto">
-      {/* Back Button */}
-      <div className="mb-6">
+      {/* Navigation */}
+      <div className="mb-6 flex items-center justify-between">
         <Button variant="ghost" asChild>
           <Link to="/">
             <ArrowLeft className="mr-2 size-4" />
             Back to Dashboard
+          </Link>
+        </Button>
+        <Button variant="ghost" asChild>
+          <Link to="/post">
+            New Post
+            <ArrowRight className="ml-2 size-4" />
           </Link>
         </Button>
       </div>
