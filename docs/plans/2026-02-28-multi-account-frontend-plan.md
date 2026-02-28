@@ -44,13 +44,6 @@ export interface ContentItem {
 Run: `npm run build`
 Expected: no type errors
 
-**Step 3: Commit**
-
-```bash
-git add src/types/dashboard.ts
-git commit -m "feat: add Account and ContentItem types"
-```
-
 ---
 
 ### Task 2: Create AccountsContext
@@ -190,13 +183,6 @@ export function Layout() {
 Run: `npm run build`
 Expected: no errors
 
-**Step 4: Commit**
-
-```bash
-git add src/contexts/AccountsContext.tsx src/components/Layout.tsx
-git commit -m "feat: add AccountsProvider context"
-```
-
 ---
 
 ### Task 3: Create useAccountFilter hook
@@ -241,13 +227,6 @@ export function useAccountFilter() {
 
 Run: `npm run build`
 Expected: no errors
-
-**Step 3: Commit**
-
-```bash
-git add src/hooks/useAccountFilter.ts
-git commit -m "feat: add useAccountFilter hook for URL-based account filtering"
-```
 
 ---
 
@@ -302,13 +281,6 @@ export function AccountFilter() {
 
 Run: `npm run build`
 Expected: no errors
-
-**Step 3: Commit**
-
-```bash
-git add src/components/AccountFilter.tsx
-git commit -m "feat: add shared AccountFilter dropdown component"
-```
 
 ---
 
@@ -379,12 +351,6 @@ Remove the `Select`-related imports (`Select, SelectContent, SelectItem, SelectT
 Run: `npm run build`
 Expected: no errors
 
-**Step 3: Commit**
-
-```bash
-git add src/pages/home.tsx
-git commit -m "feat: replace hardcoded account dropdown with dynamic AccountFilter on dashboard"
-```
 
 ---
 
@@ -453,12 +419,6 @@ Add the Accounts nav item after the Content `<SheetClose>` block (after line 72)
 Run: `npm run build`
 Expected: no errors
 
-**Step 5: Commit**
-
-```bash
-git add src/pages/accounts.tsx src/App.tsx src/components/Layout.tsx
-git commit -m "feat: add Accounts nav item and route"
-```
 
 ---
 
@@ -781,12 +741,6 @@ export function Accounts() {
 Run: `npm run build`
 Expected: no errors
 
-**Step 3: Commit**
-
-```bash
-git add src/pages/accounts.tsx
-git commit -m "feat: implement Accounts CRUD page"
-```
 
 ---
 
@@ -957,12 +911,6 @@ export function useContent(accountId: number | null = null): UseContentResult {
 Run: `npm run build`
 Expected: no errors
 
-**Step 3: Commit**
-
-```bash
-git add src/hooks/useContent.ts
-git commit -m "feat: add account filtering and assignment to useContent hook"
-```
 
 ---
 
@@ -1257,12 +1205,6 @@ export function Content() {
 Run: `npm run build`
 Expected: no errors
 
-**Step 3: Commit**
-
-```bash
-git add src/pages/content.tsx
-git commit -m "feat: add account filter, assignment checkboxes, and accounts column to Content page"
-```
 
 ---
 
@@ -1619,12 +1561,6 @@ export function Post() {
 Run: `npm run build`
 Expected: no errors
 
-**Step 3: Commit**
-
-```bash
-git add src/pages/post.tsx
-git commit -m "feat: replace hardcoded account logic with dynamic account selector on Post page"
-```
 
 ---
 
@@ -1640,4 +1576,3 @@ Expected: clean build, no errors
 Run: `npm run lint`
 Expected: no errors (warnings acceptable)
 
-**Step 3: Commit any remaining fixes if needed**

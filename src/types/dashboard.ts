@@ -68,3 +68,19 @@ export interface DashboardStats {
   userViewsPerVideo: { name: string; viewsPerVideo: number }[];
   latestEvaluation: Evaluation | null;
 }
+
+export interface Account {
+  id: number;
+  name: string;
+  ig_access_token: string;
+  ig_user_id: string;
+  gcs_bucket_name: string;
+}
+
+export interface ContentItem {
+  id: number;
+  text: string;
+  enabled: boolean;
+  created_at: string;
+  accounts: { id: number; name: string }[];
+}

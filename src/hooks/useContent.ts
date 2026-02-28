@@ -1,21 +1,15 @@
 import { useCallback, useEffect, useState } from 'react';
 import { API_BASE_URL } from '@/lib/api';
 import { authClient } from '@/lib/auth';
-
-interface ContentItem {
-  id: number;
-  text: string;
-  enabled: boolean;
-  created_at: string;
-}
+import type { ContentItem } from '@/types/dashboard';
 
 interface UseContentResult {
   hooks: ContentItem[];
   captions: ContentItem[];
   isLoading: boolean;
   error: Error | null;
-  addHook: (text: string) => Promise<{ success: boolean; error?: string }>;
-  addCaption: (text: string) => Promise<{ success: boolean; error?: string }>;
+  addHook: (text: string, accountIds?: number[]) => Promise<{ success: boolean; error?: string }>;
+  addCaption: (text: string, accountIds?: number[]) => Promise<{ success: boolean; error?: string }>;
   toggleHook: (id: number, enabled: boolean) => Promise<void>;
   toggleCaption: (id: number, enabled: boolean) => Promise<void>;
 }
@@ -31,7 +25,7 @@ async function getAuthHeaders() {
   };
 }
 
-export function useContent(): UseContentResult {
+export function useContent(accountId: number | null = null): UseContentResult {
   const [hooks, setHooks] = useState<ContentItem[]>([]);
   const [captions, setCaptions] = useState<ContentItem[]>([]);
   const [isLoading, setIsLoading] = useState(true);
@@ -42,9 +36,13 @@ export function useContent(): UseContentResult {
     setError(null);
     try {
       const headers = await getAuthHeaders();
+      const params = new URLSearchParams({ all: 'true' });
+      if (accountId !== null) params.set('accountId', String(accountId));
+      const qs = params.toString();
+
       const [hooksRes, captionsRes] = await Promise.all([
-        fetch(`${API_BASE_URL}/api/hooks?all=true`, { headers }),
-        fetch(`${API_BASE_URL}/api/captions?all=true`, { headers }),
+        fetch(`${API_BASE_URL}/api/hooks?${qs}`, { headers }),
+        fetch(`${API_BASE_URL}/api/captions?${qs}`, { headers }),
       ]);
 
       if (!hooksRes.ok || !captionsRes.ok) {
@@ -60,19 +58,21 @@ export function useContent(): UseContentResult {
     } finally {
       setIsLoading(false);
     }
-  }, []);
+  }, [accountId]);
 
   useEffect(() => {
     fetchAll();
   }, [fetchAll]);
 
-  const addHook = useCallback(async (text: string) => {
+  const addHook = useCallback(async (text: string, accountIds?: number[]) => {
     try {
       const headers = await getAuthHeaders();
+      const body: Record<string, unknown> = { text };
+      if (accountIds?.length) body.accountIds = accountIds;
       const res = await fetch(`${API_BASE_URL}/api/hooks`, {
         method: 'POST',
         headers,
-        body: JSON.stringify({ text }),
+        body: JSON.stringify(body),
       });
       const data = await res.json();
       if (!res.ok) {
@@ -85,13 +85,15 @@ export function useContent(): UseContentResult {
     }
   }, []);
 
-  const addCaption = useCallback(async (text: string) => {
+  const addCaption = useCallback(async (text: string, accountIds?: number[]) => {
     try {
       const headers = await getAuthHeaders();
+      const body: Record<string, unknown> = { text };
+      if (accountIds?.length) body.accountIds = accountIds;
       const res = await fetch(`${API_BASE_URL}/api/captions`, {
         method: 'POST',
         headers,
-        body: JSON.stringify({ text }),
+        body: JSON.stringify(body),
       });
       const data = await res.json();
       if (!res.ok) {

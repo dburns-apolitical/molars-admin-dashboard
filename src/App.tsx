@@ -1,6 +1,7 @@
 import { Route, Routes } from 'react-router-dom';
 import { Layout } from './components/Layout';
 import { Account } from './pages/account';
+import { Accounts } from './pages/accounts';
 import { Auth } from './pages/auth';
 import { Content } from './pages/content';
 import { Evaluations } from './pages/evaluations';
@@ -20,6 +21,7 @@ export default function App() {
         <Route path="/post" element={<Post />} />
         <Route path="/post/:postId" element={<PostStatus />} />
         <Route path="/content" element={<Content />} />
+        <Route path="/accounts" element={<Accounts />} />
         <Route path="/evaluations" element={<Evaluations />} />
         <Route path="/account/:pathname" element={<Account />} />
       </Route>

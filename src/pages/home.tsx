@@ -1,7 +1,7 @@
-import { useState } from 'react';
 import { Link } from 'react-router-dom';
 import Markdown from 'react-markdown';
 import { prepareMarkdown } from '@/lib/utils';
+import { AccountFilter } from '@/components/AccountFilter';
 import { Badge } from '@/components/ui/badge';
 import {
     Card,
@@ -10,13 +10,6 @@ import {
     CardHeader,
     CardTitle,
 } from '@/components/ui/card';
-import {
-    Select,
-    SelectContent,
-    SelectItem,
-    SelectTrigger,
-    SelectValue,
-} from '@/components/ui/select';
 import { Skeleton } from '@/components/ui/skeleton';
 import {
     Table,
@@ -27,6 +20,7 @@ import {
     TableRow,
 } from '@/components/ui/table';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import { useAccountFilter } from '@/hooks/useAccountFilter';
 import { useStats } from '@/hooks/useStats';
 import type { PostStatus, PostWithDetails, RankedItem } from '@/types/dashboard';
 
@@ -273,10 +267,8 @@ function RankedItemsTable({ items, label }: { items: RankedItem[]; label: string
 }
 
 export function Home() {
-    const [accountId, setAccountId] = useState<string>('all');
-    const { data, isLoading, error, refetch } = useStats(
-        accountId === 'all' ? null : Number(accountId)
-    );
+    const { accountId } = useAccountFilter();
+    const { data, isLoading, error, refetch } = useStats(accountId);
 
     if (error) {
         return (
@@ -297,16 +289,7 @@ export function Home() {
             {/* Account Filter */}
             <div className="flex items-center justify-between">
                 <h1 className="text-2xl font-bold tracking-tight">Dashboard</h1>
-                <Select value={accountId} onValueChange={setAccountId}>
-                    <SelectTrigger className="w-[220px]">
-                        <SelectValue />
-                    </SelectTrigger>
-                    <SelectContent>
-                        <SelectItem value="all">All Accounts</SelectItem>
-                        <SelectItem value="1">Molars UK (Main Account)</SelectItem>
-                        <SelectItem value="2">MLRS (Backup Account)</SelectItem>
-                    </SelectContent>
-                </Select>
+                <AccountFilter />
             </div>
 
             {/* Leaderboards */}

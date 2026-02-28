@@ -3,8 +3,9 @@ import {
   SignedIn,
   UserButton,
 } from '@neondatabase/neon-js/auth/react/ui';
-import { MenuIcon, HomeIcon, PenSquareIcon, ListIcon, SparklesIcon } from 'lucide-react';
+import { MenuIcon, HomeIcon, PenSquareIcon, ListIcon, UsersIcon, SparklesIcon } from 'lucide-react';
 import { Link, Outlet, useLocation } from 'react-router-dom';
+import { AccountsProvider } from '@/contexts/AccountsContext';
 import { Button } from '@/components/ui/button';
 import {
   Sheet,
@@ -73,6 +74,18 @@ function MobileNav() {
           </SheetClose>
           <SheetClose asChild>
             <Link
+              to="/accounts"
+              className={`flex items-center gap-4 rounded-xl px-4 py-5 text-base font-medium transition-colors ${isActive('/accounts')
+                ? 'bg-accent text-accent-foreground'
+                : 'hover:bg-accent/50'
+                }`}
+            >
+              <UsersIcon className="size-5" />
+              Accounts
+            </Link>
+          </SheetClose>
+          <SheetClose asChild>
+            <Link
               to="/evaluations"
               className={`flex items-center gap-4 rounded-xl px-4 py-5 text-base font-medium transition-colors ${isActive('/evaluations')
                 ? 'bg-accent text-accent-foreground'
@@ -96,6 +109,7 @@ export function Layout() {
   return (
     <>
       <SignedIn>
+        <AccountsProvider>
         <div className="min-h-screen bg-background">
           {/* Header */}
           <header className="sticky top-0 z-50 border-b bg-background/95 backdrop-blur supports-backdrop-filter:bg-background/60">
@@ -110,6 +124,7 @@ export function Layout() {
             <Outlet />
           </main>
         </div>
+        </AccountsProvider>
       </SignedIn>
       <RedirectToSignIn />
     </>
