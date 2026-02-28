@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { Link } from 'react-router-dom';
-import { ArrowLeft, Plus, Loader2 } from 'lucide-react';
+import { ArrowLeft, Plus, Loader2, Pencil } from 'lucide-react';
 
 import { AccountFilter } from '@/components/AccountFilter';
 import { Badge } from '@/components/ui/badge';
@@ -20,6 +20,7 @@ import {
   TableRow,
 } from '@/components/ui/table';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
 import { useAccounts } from '@/contexts/AccountsContext';
 import { useAccountFilter } from '@/hooks/useAccountFilter';
 import { useContent } from '@/hooks/useContent';
@@ -109,10 +110,14 @@ function AddForm({
 function ItemsTable({
   items,
   onToggle,
+  onToggleAccount,
 }: {
   items: ContentItem[];
   onToggle: (id: number, enabled: boolean) => Promise<void>;
+  onToggleAccount: (itemId: number, accountId: number, assigned: boolean) => Promise<void>;
 }) {
+  const { accounts } = useAccounts();
+
   if (items.length === 0) {
     return (
       <p className="text-muted-foreground text-sm py-8 text-center">No items yet.</p>
@@ -136,17 +141,45 @@ function ItemsTable({
               {item.text}
             </TableCell>
             <TableCell className="hidden sm:table-cell">
-              <div className="flex flex-wrap gap-1">
-                {item.accounts.length > 0 ? (
-                  item.accounts.map((a) => (
-                    <Badge key={a.id} variant="outline" className="text-xs">
-                      {a.name}
-                    </Badge>
-                  ))
-                ) : (
-                  <span className="text-xs text-muted-foreground">Unassigned</span>
-                )}
-              </div>
+              <Popover>
+                <PopoverTrigger asChild>
+                  <button className="flex flex-wrap gap-1 items-center cursor-pointer hover:opacity-80 transition-opacity">
+                    {item.accounts.length > 0 ? (
+                      item.accounts.map((a) => (
+                        <Badge key={a.id} variant="outline" className="text-xs">
+                          {a.name}
+                        </Badge>
+                      ))
+                    ) : (
+                      <span className="text-xs text-muted-foreground">Unassigned</span>
+                    )}
+                    <Pencil className="size-3 text-muted-foreground ml-1" />
+                  </button>
+                </PopoverTrigger>
+                <PopoverContent className="w-48 p-3" align="start">
+                  <div className="space-y-2">
+                    <p className="text-xs font-medium text-muted-foreground">Assign to accounts</p>
+                    {accounts.map((account) => {
+                      const assigned = item.accounts.some(a => a.id === account.id);
+                      return (
+                        <div key={account.id} className="flex items-center gap-2">
+                          <Checkbox
+                            id={`item-${item.id}-account-${account.id}`}
+                            checked={assigned}
+                            onCheckedChange={() => onToggleAccount(item.id, account.id, assigned)}
+                          />
+                          <Label
+                            htmlFor={`item-${item.id}-account-${account.id}`}
+                            className="text-sm font-normal cursor-pointer"
+                          >
+                            {account.name}
+                          </Label>
+                        </div>
+                      );
+                    })}
+                  </div>
+                </PopoverContent>
+              </Popover>
             </TableCell>
             <TableCell className="text-center">
               <Badge variant={item.enabled ? 'default' : 'secondary'}>
@@ -179,7 +212,7 @@ function ContentSkeleton() {
 
 export function Content() {
   const { accountId } = useAccountFilter();
-  const { hooks, captions, isLoading, error, addHook, addCaption, toggleHook, toggleCaption } =
+  const { hooks, captions, isLoading, error, addHook, addCaption, toggleHook, toggleCaption, toggleItemAccount } =
     useContent(accountId);
 
   return (
@@ -232,7 +265,11 @@ export function Content() {
                       maxLength={500}
                       onAdd={addHook}
                     />
-                    <ItemsTable items={hooks} onToggle={toggleHook} />
+                    <ItemsTable
+                      items={hooks}
+                      onToggle={toggleHook}
+                      onToggleAccount={(itemId, acctId, assigned) => toggleItemAccount('hooks', itemId, acctId, assigned)}
+                    />
                   </>
                 )}
               </CardContent>
@@ -254,7 +291,11 @@ export function Content() {
                       maxLength={2200}
                       onAdd={addCaption}
                     />
-                    <ItemsTable items={captions} onToggle={toggleCaption} />
+                    <ItemsTable
+                      items={captions}
+                      onToggle={toggleCaption}
+                      onToggleAccount={(itemId, acctId, assigned) => toggleItemAccount('captions', itemId, acctId, assigned)}
+                    />
                   </>
                 )}
               </CardContent>

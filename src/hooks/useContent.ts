@@ -3,6 +3,8 @@ import { API_BASE_URL } from '@/lib/api';
 import { authClient } from '@/lib/auth';
 import type { ContentItem } from '@/types/dashboard';
 
+type ContentType = 'hooks' | 'captions';
+
 interface UseContentResult {
   hooks: ContentItem[];
   captions: ContentItem[];
@@ -12,6 +14,7 @@ interface UseContentResult {
   addCaption: (text: string, accountIds?: number[]) => Promise<{ success: boolean; error?: string }>;
   toggleHook: (id: number, enabled: boolean) => Promise<void>;
   toggleCaption: (id: number, enabled: boolean) => Promise<void>;
+  toggleItemAccount: (type: ContentType, itemId: number, accountId: number, assigned: boolean) => Promise<void>;
 }
 
 async function getAuthHeaders() {
@@ -140,5 +143,50 @@ export function useContent(accountId: number | null = null): UseContentResult {
     }
   }, []);
 
-  return { hooks, captions, isLoading, error, addHook, addCaption, toggleHook, toggleCaption };
+  const toggleItemAccount = useCallback(async (type: ContentType, itemId: number, acctId: number, assigned: boolean) => {
+    const setter = type === 'hooks' ? setHooks : setCaptions;
+
+    // Optimistic update
+    setter(prev => prev.map(item => {
+      if (item.id !== itemId) return item;
+      const accounts = assigned
+        ? item.accounts.filter(a => a.id !== acctId)
+        : [...item.accounts, { id: acctId, name: '' }];
+      return { ...item, accounts };
+    }));
+
+    try {
+      const headers = await getAuthHeaders();
+      if (assigned) {
+        // Remove assignment
+        const res = await fetch(`${API_BASE_URL}/api/accounts/${acctId}/${type}/${itemId}`, {
+          method: 'DELETE',
+          headers,
+        });
+        if (!res.ok) throw new Error('Failed');
+      } else {
+        // Add assignment
+        const idKey = type === 'hooks' ? 'hookIds' : 'captionIds';
+        const res = await fetch(`${API_BASE_URL}/api/accounts/${acctId}/${type}`, {
+          method: 'POST',
+          headers,
+          body: JSON.stringify({ [idKey]: [itemId] }),
+        });
+        if (!res.ok) throw new Error('Failed');
+      }
+      // Refetch to get correct account names
+      await fetchAll();
+    } catch {
+      // Revert on error
+      setter(prev => prev.map(item => {
+        if (item.id !== itemId) return item;
+        const accounts = assigned
+          ? [...item.accounts, { id: acctId, name: '' }]
+          : item.accounts.filter(a => a.id !== acctId);
+        return { ...item, accounts };
+      }));
+    }
+  }, [fetchAll]);
+
+  return { hooks, captions, isLoading, error, addHook, addCaption, toggleHook, toggleCaption, toggleItemAccount };
 }
