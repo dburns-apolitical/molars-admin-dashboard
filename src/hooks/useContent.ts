@@ -81,7 +81,7 @@ export function useContent(accountId: number | null = null): UseContentResult {
       if (!res.ok) {
         return { success: false, error: data.error };
       }
-      setHooks(prev => [data.hook, ...prev]);
+      setHooks(prev => [{ ...data.hook, accounts: data.hook.accounts ?? [] }, ...prev]);
       return { success: true };
     } catch {
       return { success: false, error: 'Failed to add hook' };
@@ -102,7 +102,7 @@ export function useContent(accountId: number | null = null): UseContentResult {
       if (!res.ok) {
         return { success: false, error: data.error };
       }
-      setCaptions(prev => [data.caption, ...prev]);
+      setCaptions(prev => [{ ...data.caption, accounts: data.caption.accounts ?? [] }, ...prev]);
       return { success: true };
     } catch {
       return { success: false, error: 'Failed to add caption' };
