@@ -24,6 +24,7 @@ import { useAccountFilter } from '@/hooks/useAccountFilter';
 import { useStats } from '@/hooks/useStats';
 import { ViewsChart } from '@/components/ViewsChart';
 import { useViewsHistory } from '@/hooks/useViewsHistory';
+import { useRecentPosts } from '@/hooks/useRecentPosts';
 import type { PostStatus, PostWithDetails, RankedItem } from '@/types/dashboard';
 
 function formatNumber(num: number): string {
@@ -261,6 +262,7 @@ export function Home() {
     const { accountId } = useAccountFilter();
     const { data, isLoading, error, refetch } = useStats(accountId);
     const { data: viewsHistoryData, isLoading: viewsHistoryLoading } = useViewsHistory(accountId);
+    const { recentPosts, isLoading: recentPostsLoading } = useRecentPosts();
 
     if (error) {
         return (
@@ -279,14 +281,15 @@ export function Home() {
     return (
         <div className="space-y-10 md:space-y-12">
             {/* Account Filter */}
-            <div className="flex items-center justify-between">
-                <h1 className="text-2xl font-bold tracking-tight">Dashboard</h1>
-                <AccountFilter />
-            </div>
+           
 
             {/* Leaderboards */}
             <section>
-                <h2 className="text-lg font-semibold mb-5">Leaderboards</h2>
+            <div className="flex items-center justify-between mb-5">
+            <h2 className="text-lg font-semibold">Leaderboards</h2>
+                <AccountFilter />
+            </div>
+               
                 <div className="grid gap-4 md:grid-cols-2">
                     <LeaderboardCard
                         title="Posts by User"
@@ -313,13 +316,47 @@ export function Home() {
                 />
             </section>
 
-                        {/* Most Recent Post */}
-                        <section>
-                <h2 className="text-lg font-semibold mb-5">Most Recent Post</h2>
-                {isLoading ? (
-                    <PostCardSkeleton />
-                ) : data?.mostRecentPost ? (
-                    <PostCard post={data.mostRecentPost} highlight />
+            {/* Recent Posts */}
+            <section>
+                <h2 className="text-lg font-semibold mb-5">Recent Posts</h2>
+                {recentPostsLoading ? (
+                    <div className="space-y-2">
+                        {[...Array(3)].map((_, i) => (
+                            <div key={i} className="bg-secondary/50 rounded-lg px-3 py-2.5">
+                                <div className="flex items-center justify-between">
+                                    <div className="flex items-center gap-3">
+                                        <Skeleton className="h-4 w-24" />
+                                        <Skeleton className="h-4 w-48" />
+                                    </div>
+                                    <div className="flex items-center gap-2">
+                                        <Skeleton className="h-5 w-16 rounded-full" />
+                                        <Skeleton className="h-5 w-16 rounded-full" />
+                                    </div>
+                                </div>
+                            </div>
+                        ))}
+                    </div>
+                ) : recentPosts.length > 0 ? (
+                    <div className="space-y-2">
+                        {recentPosts.map((post, index) => {
+                            const statusStyle = getStatusStyle(post.status);
+                            const recency = getRecencyInfo(post.created_at);
+                            return (
+                                <div key={index} className="bg-secondary/50 rounded-lg px-3 py-2.5">
+                                    <div className="flex items-center justify-between">
+                                        <div className="flex items-center gap-3 min-w-0 flex-1 mr-3">
+                                            <span className="text-muted-foreground text-sm whitespace-nowrap">{post.account_name}</span>
+                                            <span className="text-sm truncate">{post.video_title}</span>
+                                        </div>
+                                        <div className="flex items-center gap-2 flex-shrink-0">
+                                            <Badge variant={statusStyle.variant} className={statusStyle.className}>{post.status}</Badge>
+                                            <Badge variant={recency.variant} className={`text-xs ${recency.className}`}>{recency.label}</Badge>
+                                        </div>
+                                    </div>
+                                </div>
+                            );
+                        })}
+                    </div>
                 ) : (
                     <Card>
                         <CardContent className="flex items-center justify-center h-32 text-muted-foreground">
