@@ -22,7 +22,8 @@ import {
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { useAccountFilter } from '@/hooks/useAccountFilter';
 import { useStats } from '@/hooks/useStats';
-import { DeltaIndicator } from '@/components/DeltaIndicator';
+import { ViewsChart } from '@/components/ViewsChart';
+import { useViewsHistory } from '@/hooks/useViewsHistory';
 import type { PostStatus, PostWithDetails, RankedItem } from '@/types/dashboard';
 
 function formatNumber(num: number): string {
@@ -259,6 +260,7 @@ function RankedItemsTable({ items, label }: { items: RankedItem[]; label: string
 export function Home() {
     const { accountId } = useAccountFilter();
     const { data, isLoading, error, refetch } = useStats(accountId);
+    const { data: viewsHistoryData, isLoading: viewsHistoryLoading } = useViewsHistory(accountId);
 
     if (error) {
         return (
@@ -358,54 +360,27 @@ export function Home() {
                 </section>
             ) : null}
 
-            {/* Metrics Section */}
+            {/* Views Overview */}
             <section>
                 <h2 className="text-lg font-semibold mb-5">Views Overview</h2>
                 <div className="grid gap-4 md:grid-cols-3">
                     {isLoading ? (
-                        <>
-                            <MetricsCardSkeleton />
-                            <MetricsCardSkeleton />
-                            <MetricsCardSkeleton />
-                        </>
+                        <MetricsCardSkeleton />
                     ) : (
-                        <>
-                            <Card>
-                                <CardHeader className="pb-2">
-                                    <CardDescription>All Time Views</CardDescription>
-                                </CardHeader>
-                                <CardContent>
-                                    <div className="text-3xl font-bold tracking-tight">
-                                        {formatNumber(data?.viewsMetrics.allTime ?? 0)}
-                                    </div>
-                                </CardContent>
-                            </Card>
-                            <Card>
-                                <CardHeader className="pb-2">
-                                    <CardDescription>Last 28 Days</CardDescription>
-                                </CardHeader>
-                                <CardContent>
-                                    <div className="text-3xl font-bold tracking-tight">
-                                        {formatNumber(data?.viewsMetrics.last28Days ?? 0)}
-                                    </div>
-                                    <div className="mt-1">
-                                        <DeltaIndicator delta={data?.viewsMetrics.deltaPercent ?? null} />
-                                        <span className="text-muted-foreground text-sm ml-1">vs previous 28 days</span>
-                                    </div>
-                                </CardContent>
-                            </Card>
-                            <Card>
-                                <CardHeader className="pb-2">
-                                    <CardDescription>Previous 28 Days</CardDescription>
-                                </CardHeader>
-                                <CardContent>
-                                    <div className="text-3xl font-bold tracking-tight">
-                                        {formatNumber(data?.viewsMetrics.previous28Days ?? 0)}
-                                    </div>
-                                </CardContent>
-                            </Card>
-                        </>
+                        <Card>
+                            <CardHeader className="pb-2">
+                                <CardDescription>All Time Views</CardDescription>
+                            </CardHeader>
+                            <CardContent>
+                                <div className="text-3xl font-bold tracking-tight">
+                                    {formatNumber(data?.viewsMetrics.allTime ?? 0)}
+                                </div>
+                            </CardContent>
+                        </Card>
                     )}
+                    <div className="md:col-span-2">
+                        <ViewsChart data={viewsHistoryData} isLoading={viewsHistoryLoading} />
+                    </div>
                 </div>
             </section>
 
