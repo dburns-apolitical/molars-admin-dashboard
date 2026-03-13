@@ -88,6 +88,7 @@ export interface ContentItem {
 export interface DailyViewsEntry {
   day: string;
   views: number;
+  postCount: number;
 }
 
 export interface ViewsHistoryData {

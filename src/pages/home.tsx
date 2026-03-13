@@ -303,6 +303,16 @@ export function Home() {
                 </div>
             </section>
 
+            {/* Views Overview */}
+            <section>
+                <h2 className="text-lg font-semibold mb-5">Views Overview</h2>
+                <ViewsChart
+                    data={viewsHistoryData}
+                    isLoading={viewsHistoryLoading}
+                    allTimeViews={data?.viewsMetrics.allTime}
+                />
+            </section>
+
                         {/* Most Recent Post */}
                         <section>
                 <h2 className="text-lg font-semibold mb-5">Most Recent Post</h2>
@@ -359,30 +369,6 @@ export function Home() {
                     </Card>
                 </section>
             ) : null}
-
-            {/* Views Overview */}
-            <section>
-                <h2 className="text-lg font-semibold mb-5">Views Overview</h2>
-                <div className="grid gap-4 md:grid-cols-3">
-                    {isLoading ? (
-                        <MetricsCardSkeleton />
-                    ) : (
-                        <Card>
-                            <CardHeader className="pb-2">
-                                <CardDescription>All Time Views</CardDescription>
-                            </CardHeader>
-                            <CardContent>
-                                <div className="text-3xl font-bold tracking-tight">
-                                    {formatNumber(data?.viewsMetrics.allTime ?? 0)}
-                                </div>
-                            </CardContent>
-                        </Card>
-                    )}
-                    <div className="md:col-span-2">
-                        <ViewsChart data={viewsHistoryData} isLoading={viewsHistoryLoading} />
-                    </div>
-                </div>
-            </section>
 
             {/* Post Count Metrics */}
             <section>

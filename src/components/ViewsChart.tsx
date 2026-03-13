@@ -24,27 +24,29 @@ function formatChartDate(dateStr: string): string {
 
 function formatTooltipDate(dateStr: string): string {
     const date = new Date(dateStr + 'T00:00:00');
-    return date.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
+    return date.toLocaleDateString('en-US', { weekday: 'short', month: 'short', day: 'numeric' });
 }
 
 interface ViewsChartProps {
     data: ViewsHistoryData | null;
     isLoading: boolean;
+    allTimeViews?: number;
 }
 
-function fillDateGaps(dailyViews: { day: string; views: number }[]): { day: string; views: number }[] {
+function fillDateGaps(dailyViews: { day: string; views: number; postCount: number }[]): { day: string; views: number; postCount: number }[] {
     const now = new Date();
     const startDate = new Date(now);
     startDate.setDate(startDate.getDate() - 27);
 
-    const viewsByDay = new Map(dailyViews.map(d => [d.day, d.views]));
-    const filled: { day: string; views: number }[] = [];
+    const dataByDay = new Map(dailyViews.map(d => [d.day, d]));
+    const filled: { day: string; views: number; postCount: number }[] = [];
 
     for (let i = 0; i < 28; i++) {
         const date = new Date(startDate);
         date.setDate(date.getDate() + i);
         const dayStr = date.toISOString().split('T')[0];
-        filled.push({ day: dayStr, views: viewsByDay.get(dayStr) ?? 0 });
+        const existing = dataByDay.get(dayStr);
+        filled.push({ day: dayStr, views: existing?.views ?? 0, postCount: existing?.postCount ?? 0 });
     }
 
     return filled;
@@ -52,15 +54,17 @@ function fillDateGaps(dailyViews: { day: string; views: number }[]): { day: stri
 
 function ChartTooltip({ active, payload, label }: any) {
     if (!active || !payload?.length) return null;
+    const data = payload[0].payload;
     return (
         <div className="rounded-md border bg-popover px-3 py-2 text-sm shadow-md">
             <p className="font-medium">{formatTooltipDate(label)}</p>
             <p className="text-muted-foreground">{formatNumber(payload[0].value)} views</p>
+            <p className="text-muted-foreground">{data.postCount} {data.postCount === 1 ? 'post' : 'posts'}</p>
         </div>
     );
 }
 
-export function ViewsChart({ data, isLoading }: ViewsChartProps) {
+export function ViewsChart({ data, isLoading, allTimeViews }: ViewsChartProps) {
     if (isLoading) {
         return (
             <Card>
@@ -99,12 +103,24 @@ export function ViewsChart({ data, isLoading }: ViewsChartProps) {
 
     const chartData = fillDateGaps(
         data.dailyViews.filter(d => d.day >= cutoffStr)
-    );
+    ).map(d => {
+        const date = new Date(d.day + 'T00:00:00');
+        date.setDate(date.getDate() - 2);
+        return { ...d, day: date.toISOString().split('T')[0] };
+    });
 
     return (
         <Card>
             <CardHeader className="pb-2">
-                <CardDescription>Views Over Last 28 Days</CardDescription>
+                <div className="flex items-center justify-between">
+                    <CardDescription>Views Over Last 28 Days</CardDescription>
+                    {allTimeViews != null && (
+                        <div className="text-right">
+                            <p className="text-xs text-muted-foreground">All Time</p>
+                            <p className="text-lg font-bold tracking-tight">{formatNumber(allTimeViews)}</p>
+                        </div>
+                    )}
+                </div>
             </CardHeader>
             <CardContent>
                 <ResponsiveContainer width="100%" height={250}>
@@ -117,11 +133,7 @@ export function ViewsChart({ data, isLoading }: ViewsChartProps) {
                         </defs>
                         <XAxis
                             dataKey="day"
-                            tickFormatter={formatChartDate}
-                            tick={{ fontSize: 12 }}
-                            tickLine={false}
-                            axisLine={false}
-                            interval="preserveStartEnd"
+                            hide
                         />
                         <YAxis
                             tickFormatter={(v: number) => formatNumber(v)}
@@ -140,12 +152,13 @@ export function ViewsChart({ data, isLoading }: ViewsChartProps) {
                     </AreaChart>
                 </ResponsiveContainer>
 
-                <div className="flex justify-between items-end mt-4 pt-4 border-t">
+                <div className="flex justify-between items-start mt-4 pt-4 border-t">
                     <div>
                         <p className="text-sm text-muted-foreground">Previous 28 days</p>
                         <p className="text-2xl font-bold tracking-tight">
                             {formatNumber(data.previous28DaysTotal)}
                         </p>
+                        <span className="text-sm invisible">placeholder</span>
                     </div>
                     <div className="text-right">
                         <p className="text-sm text-muted-foreground">Last 28 days</p>
