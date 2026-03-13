@@ -47,6 +47,7 @@ function fillDateGaps(dailyViews: { day: string; views: number; postCount: numbe
     return filled;
 }
 
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
 function ChartTooltip({ active, payload, label }: any) {
     if (!active || !payload?.length) return null;
     const data = payload[0].payload;
