@@ -55,9 +55,15 @@ export interface Evaluation {
   created_at: string;
 }
 
+export interface RecentPost {
+  account_name: string;
+  video_title: string;
+  status: PostStatus;
+  created_at: string;
+}
+
 export interface DashboardStats {
   topPosts: PostWithDetails[];
-  mostRecentPost: PostWithDetails | null;
   viewsMetrics: ViewsMetrics;
   postCountMetrics: PostCountMetrics;
   topCaptions: RankedItem[];
