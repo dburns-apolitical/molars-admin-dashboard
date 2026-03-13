@@ -84,3 +84,15 @@ export interface ContentItem {
   created_at: string;
   accounts: { id: number; name: string }[];
 }
+
+export interface DailyViewsEntry {
+  day: string;
+  views: number;
+}
+
+export interface ViewsHistoryData {
+  dailyViews: DailyViewsEntry[];
+  last28DaysTotal: number;
+  previous28DaysTotal: number;
+  deltaPercent: number | null;
+}
