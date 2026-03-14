@@ -40,8 +40,6 @@ async function getAuthHeaders() {
 
 interface AccountFormData {
   name: string;
-  ig_access_token: string;
-  ig_user_id: string;
   gcs_bucket_name: string;
 }
 
@@ -57,8 +55,6 @@ function AccountForm({
   const isEditing = !!account;
   const [formData, setFormData] = useState<AccountFormData>({
     name: account?.name ?? '',
-    ig_access_token: '',
-    ig_user_id: account?.ig_user_id ?? '',
     gcs_bucket_name: account?.gcs_bucket_name ?? '',
   });
   const [isSaving, setIsSaving] = useState(false);
@@ -73,12 +69,8 @@ function AccountForm({
       const headers = await getAuthHeaders();
       const body: Record<string, string> = {
         name: formData.name,
-        ig_user_id: formData.ig_user_id,
         gcs_bucket_name: formData.gcs_bucket_name,
       };
-      if (formData.ig_access_token) {
-        body.ig_access_token = formData.ig_access_token;
-      }
 
       const url = isEditing
         ? `${API_BASE_URL}/api/accounts/${account.id}`
@@ -99,9 +91,7 @@ function AccountForm({
     }
   };
 
-  const isValid = isEditing
-    ? formData.name && formData.ig_user_id && formData.gcs_bucket_name
-    : formData.name && formData.ig_access_token && formData.ig_user_id && formData.gcs_bucket_name;
+  const isValid = formData.name && formData.gcs_bucket_name;
 
   return (
     <Card className="mb-6">
@@ -119,29 +109,6 @@ function AccountForm({
               value={formData.name}
               onChange={(e) => setFormData((d) => ({ ...d, name: e.target.value }))}
               placeholder="Account name"
-              required
-            />
-          </div>
-
-          <div className="space-y-2">
-            <Label htmlFor="ig_access_token">IG Access Token</Label>
-            <Input
-              id="ig_access_token"
-              type="password"
-              value={formData.ig_access_token}
-              onChange={(e) => setFormData((d) => ({ ...d, ig_access_token: e.target.value }))}
-              placeholder={isEditing ? '••••••••' : 'Enter access token'}
-              required={!isEditing}
-            />
-          </div>
-
-          <div className="space-y-2">
-            <Label htmlFor="ig_user_id">IG User ID</Label>
-            <Input
-              id="ig_user_id"
-              value={formData.ig_user_id}
-              onChange={(e) => setFormData((d) => ({ ...d, ig_user_id: e.target.value }))}
-              placeholder="Instagram user ID"
               required
             />
           </div>
@@ -238,7 +205,7 @@ export function Accounts() {
       <div className="mb-8 flex items-center justify-between">
         <div>
           <h1 className="text-2xl font-bold tracking-tight">Accounts</h1>
-          <p className="text-muted-foreground">Manage Instagram accounts.</p>
+          <p className="text-muted-foreground">Manage accounts and credentials.</p>
         </div>
         {!showForm && !editingAccount && (
           <Button onClick={() => setShowForm(true)}>
@@ -275,8 +242,8 @@ export function Accounts() {
             <Table>
               <TableHeader>
                 <TableRow>
+                  <TableHead className="w-10"></TableHead>
                   <TableHead>Name</TableHead>
-                  <TableHead className="hidden sm:table-cell">IG User ID</TableHead>
                   <TableHead className="hidden sm:table-cell">GCS Bucket</TableHead>
                   <TableHead className="w-24 text-right">Actions</TableHead>
                 </TableRow>
@@ -284,26 +251,15 @@ export function Accounts() {
               <TableBody>
                 {accounts.map((account) => (
                   <TableRow key={account.id}>
+                    <TableCell className="w-10"></TableCell>
                     <TableCell className="font-medium">{account.name}</TableCell>
-                    <TableCell className="hidden sm:table-cell">{account.ig_user_id}</TableCell>
                     <TableCell className="hidden sm:table-cell">{account.gcs_bucket_name}</TableCell>
                     <TableCell className="text-right">
                       <div className="flex justify-end gap-1">
-                        <Button
-                          variant="ghost"
-                          size="icon"
-                          onClick={() => handleEdit(account)}
-                        >
+                        <Button variant="ghost" size="icon" onClick={() => handleEdit(account)}>
                           <Pencil className="size-4" />
                         </Button>
-                        <Button
-                          variant="ghost"
-                          size="icon"
-                          onClick={() => {
-                            setDeleteError(null);
-                            setDeletingAccount(account);
-                          }}
-                        >
+                        <Button variant="ghost" size="icon" onClick={() => { setDeleteError(null); setDeletingAccount(account); }}>
                           <Trash2 className="size-4" />
                         </Button>
                       </div>
