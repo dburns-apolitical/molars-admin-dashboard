@@ -280,15 +280,13 @@ export function Home() {
 
     return (
         <div className="space-y-10 md:space-y-12">
-            {/* Account Filter */}
-            <div className="flex items-center justify-between">
-                <h1 className="text-2xl font-bold tracking-tight">Dashboard</h1>
-                <AccountFilter />
-            </div>
-
             {/* Leaderboards */}
             <section>
-                <h2 className="text-lg font-semibold mb-5">Leaderboards</h2>
+            <div className="flex items-center justify-between mb-5">
+            <h2 className="text-lg font-semibold">Leaderboards</h2>
+                <AccountFilter />
+            </div>
+              
                 <div className="grid gap-4 md:grid-cols-2">
                     <LeaderboardCard
                         title="Posts by User"
