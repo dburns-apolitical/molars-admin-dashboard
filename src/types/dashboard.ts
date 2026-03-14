@@ -75,12 +75,23 @@ export interface DashboardStats {
   latestEvaluation: Evaluation | null;
 }
 
+export type Platform = 'instagram_direct' | 'upload_post';
+
+export interface Credential {
+  id: number;
+  account_id: number;
+  platform: Platform;
+  credentials: Record<string, string>;
+  created_at: string;
+}
+
 export interface Account {
   id: number;
   name: string;
   ig_access_token: string;
   ig_user_id: string;
   gcs_bucket_name: string;
+  credentials: Credential[];
 }
 
 export interface ContentItem {
