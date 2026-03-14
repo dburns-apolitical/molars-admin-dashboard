@@ -1,6 +1,6 @@
-import { useState } from 'react';
+import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
-import { ArrowLeft, Loader2, Pencil, Plus, Trash2 } from 'lucide-react';
+import { ArrowLeft, ChevronDown, ChevronRight, Loader2, Pencil, Plus, Trash2 } from 'lucide-react';
 
 import {
   AlertDialog,
@@ -12,6 +12,7 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
 } from '@/components/ui/alert-dialog';
+import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
@@ -27,7 +28,7 @@ import {
 import { useAccounts } from '@/contexts/AccountsContext';
 import { API_BASE_URL } from '@/lib/api';
 import { authClient } from '@/lib/auth';
-import type { Account } from '@/types/dashboard';
+import type { Account, Credential, Platform } from '@/types/dashboard';
 
 async function getAuthHeaders() {
   const session = await authClient.getSession();
@@ -149,6 +150,20 @@ export function Accounts() {
   const [deleteError, setDeleteError] = useState<string | null>(null);
   const [isDeleting, setIsDeleting] = useState(false);
 
+  const [expandedAccountId, setExpandedAccountId] = useState<number | null>(null);
+  const [addingCredentialForAccountId, setAddingCredentialForAccountId] = useState<number | null>(null);
+  const [editingCredentialId, setEditingCredentialId] = useState<number | null>(null);
+  const [deletingCredential, setDeletingCredential] = useState<Credential | null>(null);
+  const [credentialFormData, setCredentialFormData] = useState<{
+    platform: Platform | '';
+    ig_access_token: string;
+    ig_user_id: string;
+    api_key: string;
+    user: string;
+  }>({ platform: '', ig_access_token: '', ig_user_id: '', api_key: '', user: '' });
+  const [isSavingCredential, setIsSavingCredential] = useState(false);
+  const [credentialError, setCredentialError] = useState<string | null>(null);
+
   const handleSave = () => {
     setShowForm(false);
     setEditingAccount(null);
@@ -186,6 +201,109 @@ export function Accounts() {
       refetch();
     } catch (err) {
       setDeleteError(err instanceof Error ? err.message : 'An error occurred');
+    } finally {
+      setIsDeleting(false);
+    }
+  };
+
+  const resetCredentialForm = () => {
+    setAddingCredentialForAccountId(null);
+    setEditingCredentialId(null);
+    setCredentialFormData({ platform: '', ig_access_token: '', ig_user_id: '', api_key: '', user: '' });
+    setCredentialError(null);
+  };
+
+  const platformLabel = (platform: Platform) => {
+    switch (platform) {
+      case 'instagram_direct': return 'Instagram Direct';
+      case 'upload_post': return 'Upload Post';
+      default: return platform;
+    }
+  };
+
+  const isCredentialFormValid = () => {
+    if (!credentialFormData.platform) return false;
+    if (credentialFormData.platform === 'instagram_direct') {
+      return credentialFormData.ig_access_token && credentialFormData.ig_user_id;
+    }
+    if (credentialFormData.platform === 'upload_post') {
+      return credentialFormData.api_key && credentialFormData.user;
+    }
+    return false;
+  };
+
+  const handleSaveCredential = async (accountId: number, credentialId?: number) => {
+    setIsSavingCredential(true);
+    setCredentialError(null);
+
+    try {
+      const headers = await getAuthHeaders();
+      let credentials: Record<string, string>;
+
+      if (credentialFormData.platform === 'instagram_direct') {
+        credentials = {
+          ig_access_token: credentialFormData.ig_access_token,
+          ig_user_id: credentialFormData.ig_user_id,
+        };
+      } else {
+        credentials = {
+          api_key: credentialFormData.api_key,
+          user: credentialFormData.user,
+        };
+      }
+
+      if (credentialId) {
+        const res = await fetch(`${API_BASE_URL}/api/credentials/${credentialId}`, {
+          method: 'PATCH',
+          headers,
+          body: JSON.stringify({ credentials }),
+        });
+        if (!res.ok) {
+          const data = await res.json().catch(() => null);
+          throw new Error(data?.error ?? 'Failed to update credential');
+        }
+      } else {
+        const res = await fetch(`${API_BASE_URL}/api/accounts/${accountId}/credentials`, {
+          method: 'POST',
+          headers,
+          body: JSON.stringify({ platform: credentialFormData.platform, credentials }),
+        });
+        if (!res.ok) {
+          const data = await res.json().catch(() => null);
+          throw new Error(data?.error ?? 'Failed to add credential');
+        }
+      }
+
+      resetCredentialForm();
+      refetch();
+    } catch (err) {
+      setCredentialError(err instanceof Error ? err.message : 'An error occurred');
+    } finally {
+      setIsSavingCredential(false);
+    }
+  };
+
+  const handleDeleteCredential = async () => {
+    if (!deletingCredential) return;
+    setIsDeleting(true);
+    setCredentialError(null);
+
+    try {
+      const headers = await getAuthHeaders();
+      const res = await fetch(`${API_BASE_URL}/api/credentials/${deletingCredential.id}`, {
+        method: 'DELETE',
+        headers,
+      });
+
+      if (!res.ok) {
+        const data = await res.json().catch(() => null);
+        throw new Error(data?.error ?? 'Failed to delete credential');
+      }
+
+      setDeletingCredential(null);
+      refetch();
+    } catch (err) {
+      setCredentialError(err instanceof Error ? err.message : 'An error occurred');
     } finally {
       setIsDeleting(false);
     }
@@ -250,21 +368,331 @@ export function Accounts() {
               </TableHeader>
               <TableBody>
                 {accounts.map((account) => (
-                  <TableRow key={account.id}>
-                    <TableCell className="w-10"></TableCell>
-                    <TableCell className="font-medium">{account.name}</TableCell>
-                    <TableCell className="hidden sm:table-cell">{account.gcs_bucket_name}</TableCell>
-                    <TableCell className="text-right">
-                      <div className="flex justify-end gap-1">
-                        <Button variant="ghost" size="icon" onClick={() => handleEdit(account)}>
-                          <Pencil className="size-4" />
+                  <React.Fragment key={account.id}>
+                    <TableRow>
+                      <TableCell className="w-10">
+                        <Button
+                          variant="ghost"
+                          size="icon"
+                          className="size-6"
+                          onClick={() =>
+                            setExpandedAccountId(
+                              expandedAccountId === account.id ? null : account.id
+                            )
+                          }
+                        >
+                          {expandedAccountId === account.id ? (
+                            <ChevronDown className="size-4" />
+                          ) : (
+                            <ChevronRight className="size-4" />
+                          )}
                         </Button>
-                        <Button variant="ghost" size="icon" onClick={() => { setDeleteError(null); setDeletingAccount(account); }}>
-                          <Trash2 className="size-4" />
-                        </Button>
-                      </div>
-                    </TableCell>
-                  </TableRow>
+                      </TableCell>
+                      <TableCell className="font-medium">{account.name}</TableCell>
+                      <TableCell className="hidden sm:table-cell">{account.gcs_bucket_name}</TableCell>
+                      <TableCell className="text-right">
+                        <div className="flex justify-end gap-1">
+                          <Button variant="ghost" size="icon" onClick={() => handleEdit(account)}>
+                            <Pencil className="size-4" />
+                          </Button>
+                          <Button variant="ghost" size="icon" onClick={() => { setDeleteError(null); setDeletingAccount(account); }}>
+                            <Trash2 className="size-4" />
+                          </Button>
+                        </div>
+                      </TableCell>
+                    </TableRow>
+                    {expandedAccountId === account.id && (
+                      <TableRow>
+                        <TableCell colSpan={4} className="bg-muted/30 px-6 py-4">
+                          <div className="space-y-3">
+                            <p className="text-sm font-semibold">Credentials</p>
+
+                            {(!account.credentials || account.credentials.length === 0) &&
+                              addingCredentialForAccountId !== account.id && (
+                                <p className="text-sm text-muted-foreground">No credentials configured.</p>
+                              )}
+
+                            {account.credentials && account.credentials.map((credential) => (
+                              <div key={credential.id}>
+                                {editingCredentialId === credential.id ? (
+                                  <div className="space-y-3 rounded-md border bg-background p-3">
+                                    {credentialFormData.platform === 'instagram_direct' && (
+                                      <>
+                                        <div className="space-y-1">
+                                          <Label className="text-xs">Access Token</Label>
+                                          <Input
+                                            type="password"
+                                            value={credentialFormData.ig_access_token}
+                                            onChange={(e) =>
+                                              setCredentialFormData((d) => ({
+                                                ...d,
+                                                ig_access_token: e.target.value,
+                                              }))
+                                            }
+                                            placeholder="ig_access_token"
+                                          />
+                                        </div>
+                                        <div className="space-y-1">
+                                          <Label className="text-xs">User ID</Label>
+                                          <Input
+                                            type="text"
+                                            value={credentialFormData.ig_user_id}
+                                            onChange={(e) =>
+                                              setCredentialFormData((d) => ({
+                                                ...d,
+                                                ig_user_id: e.target.value,
+                                              }))
+                                            }
+                                            placeholder="ig_user_id"
+                                          />
+                                        </div>
+                                      </>
+                                    )}
+                                    {credentialFormData.platform === 'upload_post' && (
+                                      <>
+                                        <div className="space-y-1">
+                                          <Label className="text-xs">API Key</Label>
+                                          <Input
+                                            type="password"
+                                            value={credentialFormData.api_key}
+                                            onChange={(e) =>
+                                              setCredentialFormData((d) => ({
+                                                ...d,
+                                                api_key: e.target.value,
+                                              }))
+                                            }
+                                            placeholder="api_key"
+                                          />
+                                        </div>
+                                        <div className="space-y-1">
+                                          <Label className="text-xs">User</Label>
+                                          <Input
+                                            type="text"
+                                            value={credentialFormData.user}
+                                            onChange={(e) =>
+                                              setCredentialFormData((d) => ({
+                                                ...d,
+                                                user: e.target.value,
+                                              }))
+                                            }
+                                            placeholder="user"
+                                          />
+                                        </div>
+                                      </>
+                                    )}
+                                    {credentialError && (
+                                      <p className="text-sm text-destructive">{credentialError}</p>
+                                    )}
+                                    <div className="flex gap-2">
+                                      <Button
+                                        size="sm"
+                                        disabled={isSavingCredential || !isCredentialFormValid()}
+                                        onClick={() => handleSaveCredential(account.id, credential.id)}
+                                      >
+                                        {isSavingCredential && (
+                                          <Loader2 className="mr-2 size-3 animate-spin" />
+                                        )}
+                                        Save
+                                      </Button>
+                                      <Button
+                                        size="sm"
+                                        variant="outline"
+                                        onClick={resetCredentialForm}
+                                        disabled={isSavingCredential}
+                                      >
+                                        Cancel
+                                      </Button>
+                                    </div>
+                                  </div>
+                                ) : (
+                                  <div className="flex items-center justify-between rounded-md border bg-background px-3 py-2">
+                                    <div className="flex items-center gap-3">
+                                      <Badge
+                                        variant={
+                                          credential.platform === 'instagram_direct'
+                                            ? 'default'
+                                            : 'secondary'
+                                        }
+                                      >
+                                        {platformLabel(credential.platform)}
+                                      </Badge>
+                                      <span className="font-mono text-xs text-muted-foreground">
+                                        {credential.platform === 'instagram_direct'
+                                          ? `user_id: ${credential.credentials.ig_user_id ?? '—'}`
+                                          : `user: ${credential.credentials.user ?? '—'}`}
+                                      </span>
+                                    </div>
+                                    <div className="flex gap-1">
+                                      <Button
+                                        variant="ghost"
+                                        size="icon"
+                                        className="size-7"
+                                        onClick={() => {
+                                          setEditingCredentialId(credential.id);
+                                          setAddingCredentialForAccountId(null);
+                                          setCredentialError(null);
+                                          setCredentialFormData({
+                                            platform: credential.platform,
+                                            ig_access_token: '',
+                                            ig_user_id:
+                                              credential.credentials.ig_user_id ?? '',
+                                            api_key: '',
+                                            user: credential.credentials.user ?? '',
+                                          });
+                                        }}
+                                      >
+                                        <Pencil className="size-3" />
+                                      </Button>
+                                      <Button
+                                        variant="ghost"
+                                        size="icon"
+                                        className="size-7"
+                                        onClick={() => {
+                                          setCredentialError(null);
+                                          setDeletingCredential(credential);
+                                        }}
+                                      >
+                                        <Trash2 className="size-3" />
+                                      </Button>
+                                    </div>
+                                  </div>
+                                )}
+                              </div>
+                            ))}
+
+                            {addingCredentialForAccountId === account.id ? (
+                              <div className="space-y-3 rounded-md border bg-background p-3">
+                                <div className="space-y-1">
+                                  <Label className="text-xs">Platform</Label>
+                                  <select
+                                    className="flex h-9 w-full rounded-md border border-input bg-transparent px-3 py-1 text-sm shadow-xs transition-colors placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring"
+                                    value={credentialFormData.platform}
+                                    onChange={(e) =>
+                                      setCredentialFormData({
+                                        platform: e.target.value as Platform | '',
+                                        ig_access_token: '',
+                                        ig_user_id: '',
+                                        api_key: '',
+                                        user: '',
+                                      })
+                                    }
+                                  >
+                                    <option value="">Select platform...</option>
+                                    <option value="instagram_direct">Instagram Direct</option>
+                                    <option value="upload_post">Upload Post</option>
+                                  </select>
+                                </div>
+
+                                {credentialFormData.platform === 'instagram_direct' && (
+                                  <>
+                                    <div className="space-y-1">
+                                      <Label className="text-xs">Access Token</Label>
+                                      <Input
+                                        type="password"
+                                        value={credentialFormData.ig_access_token}
+                                        onChange={(e) =>
+                                          setCredentialFormData((d) => ({
+                                            ...d,
+                                            ig_access_token: e.target.value,
+                                          }))
+                                        }
+                                        placeholder="ig_access_token"
+                                      />
+                                    </div>
+                                    <div className="space-y-1">
+                                      <Label className="text-xs">User ID</Label>
+                                      <Input
+                                        type="text"
+                                        value={credentialFormData.ig_user_id}
+                                        onChange={(e) =>
+                                          setCredentialFormData((d) => ({
+                                            ...d,
+                                            ig_user_id: e.target.value,
+                                          }))
+                                        }
+                                        placeholder="ig_user_id"
+                                      />
+                                    </div>
+                                  </>
+                                )}
+
+                                {credentialFormData.platform === 'upload_post' && (
+                                  <>
+                                    <div className="space-y-1">
+                                      <Label className="text-xs">API Key</Label>
+                                      <Input
+                                        type="password"
+                                        value={credentialFormData.api_key}
+                                        onChange={(e) =>
+                                          setCredentialFormData((d) => ({
+                                            ...d,
+                                            api_key: e.target.value,
+                                          }))
+                                        }
+                                        placeholder="api_key"
+                                      />
+                                    </div>
+                                    <div className="space-y-1">
+                                      <Label className="text-xs">User</Label>
+                                      <Input
+                                        type="text"
+                                        value={credentialFormData.user}
+                                        onChange={(e) =>
+                                          setCredentialFormData((d) => ({
+                                            ...d,
+                                            user: e.target.value,
+                                          }))
+                                        }
+                                        placeholder="user"
+                                      />
+                                    </div>
+                                  </>
+                                )}
+
+                                {credentialError && (
+                                  <p className="text-sm text-destructive">{credentialError}</p>
+                                )}
+                                <div className="flex gap-2">
+                                  <Button
+                                    size="sm"
+                                    disabled={isSavingCredential || !isCredentialFormValid()}
+                                    onClick={() => handleSaveCredential(account.id)}
+                                  >
+                                    {isSavingCredential && (
+                                      <Loader2 className="mr-2 size-3 animate-spin" />
+                                    )}
+                                    Save
+                                  </Button>
+                                  <Button
+                                    size="sm"
+                                    variant="outline"
+                                    onClick={resetCredentialForm}
+                                    disabled={isSavingCredential}
+                                  >
+                                    Cancel
+                                  </Button>
+                                </div>
+                              </div>
+                            ) : (
+                              editingCredentialId === null && (
+                                <Button
+                                  size="sm"
+                                  variant="outline"
+                                  onClick={() => {
+                                    resetCredentialForm();
+                                    setAddingCredentialForAccountId(account.id);
+                                  }}
+                                >
+                                  <Plus className="mr-1 size-3" />
+                                  Add Credential
+                                </Button>
+                              )
+                            )}
+                          </div>
+                        </TableCell>
+                      </TableRow>
+                    )}
+                  </React.Fragment>
                 ))}
               </TableBody>
             </Table>
@@ -298,6 +726,42 @@ export function Accounts() {
               onClick={(e) => {
                 e.preventDefault();
                 handleDelete();
+              }}
+              disabled={isDeleting}
+              className="bg-destructive text-white hover:bg-destructive/90"
+            >
+              {isDeleting && <Loader2 className="mr-2 size-4 animate-spin" />}
+              Delete
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
+
+      <AlertDialog
+        open={!!deletingCredential}
+        onOpenChange={(open) => {
+          if (!open) {
+            setDeletingCredential(null);
+            setCredentialError(null);
+          }
+        }}
+      >
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>Delete Credential</AlertDialogTitle>
+            <AlertDialogDescription>
+              Are you sure you want to delete this <strong>{deletingCredential ? platformLabel(deletingCredential.platform) : ''}</strong> credential? This action cannot be undone.
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          {credentialError && (
+            <p className="text-sm text-destructive">{credentialError}</p>
+          )}
+          <AlertDialogFooter>
+            <AlertDialogCancel disabled={isDeleting}>Cancel</AlertDialogCancel>
+            <AlertDialogAction
+              onClick={(e) => {
+                e.preventDefault();
+                handleDeleteCredential();
               }}
               disabled={isDeleting}
               className="bg-destructive text-white hover:bg-destructive/90"
