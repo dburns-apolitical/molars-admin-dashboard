@@ -13,6 +13,7 @@ import {
   AlertDialogTitle,
 } from '@/components/ui/alert-dialog';
 import { Badge } from '@/components/ui/badge';
+import { Checkbox } from '@/components/ui/checkbox';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
@@ -160,7 +161,11 @@ export function Accounts() {
     ig_user_id: string;
     api_key: string;
     user: string;
-  }>({ platform: '', ig_access_token: '', ig_user_id: '', api_key: '', user: '' });
+    instagram: boolean;
+    youtube: boolean;
+    tiktok: boolean;
+    twitter: boolean;
+  }>({ platform: '', ig_access_token: '', ig_user_id: '', api_key: '', user: '', instagram: false, youtube: false, tiktok: false, twitter: false });
   const [isSavingCredential, setIsSavingCredential] = useState(false);
   const [credentialError, setCredentialError] = useState<string | null>(null);
 
@@ -209,7 +214,7 @@ export function Accounts() {
   const resetCredentialForm = () => {
     setAddingCredentialForAccountId(null);
     setEditingCredentialId(null);
-    setCredentialFormData({ platform: '', ig_access_token: '', ig_user_id: '', api_key: '', user: '' });
+    setCredentialFormData({ platform: '', ig_access_token: '', ig_user_id: '', api_key: '', user: '', instagram: false, youtube: false, tiktok: false, twitter: false });
     setCredentialError(null);
   };
 
@@ -249,6 +254,10 @@ export function Accounts() {
         credentials = {
           api_key: credentialFormData.api_key,
           user: credentialFormData.user,
+          instagram: credentialFormData.instagram,
+          youtube: credentialFormData.youtube,
+          tiktok: credentialFormData.tiktok,
+          twitter: credentialFormData.twitter,
         };
       }
 
@@ -478,6 +487,22 @@ export function Accounts() {
                                             placeholder="user"
                                           />
                                         </div>
+                                        <div className="space-y-1">
+                                          <Label className="text-xs">Platforms</Label>
+                                          <div className="flex flex-wrap gap-4">
+                                            {(['instagram', 'youtube', 'tiktok', 'twitter'] as const).map((p) => (
+                                              <label key={p} className="flex items-center gap-1.5 text-xs capitalize">
+                                                <Checkbox
+                                                  checked={credentialFormData[p]}
+                                                  onCheckedChange={(checked) =>
+                                                    setCredentialFormData((d) => ({ ...d, [p]: !!checked }))
+                                                  }
+                                                />
+                                                {p}
+                                              </label>
+                                            ))}
+                                          </div>
+                                        </div>
                                       </>
                                     )}
                                     {credentialError && (
@@ -645,6 +670,22 @@ export function Accounts() {
                                         }
                                         placeholder="user"
                                       />
+                                    </div>
+                                    <div className="space-y-1">
+                                      <Label className="text-xs">Platforms</Label>
+                                      <div className="flex flex-wrap gap-4">
+                                        {(['instagram', 'youtube', 'tiktok', 'twitter'] as const).map((p) => (
+                                          <label key={p} className="flex items-center gap-1.5 text-xs capitalize">
+                                            <Checkbox
+                                              checked={credentialFormData[p]}
+                                              onCheckedChange={(checked) =>
+                                                setCredentialFormData((d) => ({ ...d, [p]: !!checked }))
+                                              }
+                                            />
+                                            {p}
+                                          </label>
+                                        ))}
+                                      </div>
                                     </div>
                                   </>
                                 )}
