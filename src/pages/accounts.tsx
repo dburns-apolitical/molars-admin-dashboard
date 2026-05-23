@@ -254,10 +254,10 @@ export function Accounts() {
         credentials = {
           api_key: credentialFormData.api_key,
           user: credentialFormData.user,
-          instagram: credentialFormData.instagram,
-          youtube: credentialFormData.youtube,
-          tiktok: credentialFormData.tiktok,
-          twitter: credentialFormData.twitter,
+          instagram: String(credentialFormData.instagram),
+          youtube: String(credentialFormData.youtube),
+          tiktok: String(credentialFormData.tiktok),
+          twitter: String(credentialFormData.twitter),
         };
       }
 
@@ -563,6 +563,10 @@ export function Accounts() {
                                               credential.credentials.ig_user_id ?? '',
                                             api_key: '',
                                             user: credential.credentials.user ?? '',
+                                            instagram: credential.credentials.instagram === 'true',
+                                            youtube: credential.credentials.youtube === 'true',
+                                            tiktok: credential.credentials.tiktok === 'true',
+                                            twitter: credential.credentials.twitter === 'true',
                                           });
                                         }}
                                       >
@@ -599,6 +603,10 @@ export function Accounts() {
                                         ig_user_id: '',
                                         api_key: '',
                                         user: '',
+                                        instagram: false,
+                                        youtube: false,
+                                        tiktok: false,
+                                        twitter: false,
                                       })
                                     }
                                   >
