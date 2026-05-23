@@ -114,3 +114,18 @@ export interface ViewsHistoryData {
   previous28DaysTotal: number;
   deltaPercent: number | null;
 }
+
+export interface DailyImpressionEntry {
+  day: string;
+  instagram: number;
+  youtube: number;
+  tiktok: number;
+  twitter: number;
+}
+
+export interface ImpressionsHistoryData {
+  dailyImpressions: DailyImpressionEntry[];
+  last28DaysTotal: number;
+  previous28DaysTotal: number;
+  deltaPercent: number | null;
+}
