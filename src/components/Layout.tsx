@@ -3,7 +3,7 @@ import {
   SignedIn,
   UserButton,
 } from '@neondatabase/neon-js/auth/react/ui';
-import { MenuIcon, HomeIcon, PenSquareIcon, ListIcon, UsersIcon, SparklesIcon } from 'lucide-react';
+import { MenuIcon, HomeIcon, PenSquareIcon, ListIcon, FilmIcon, UsersIcon, SparklesIcon } from 'lucide-react';
 import { Link, Outlet, useLocation } from 'react-router-dom';
 import { AccountsProvider } from '@/contexts/AccountsContext';
 import { Button } from '@/components/ui/button';
@@ -70,6 +70,18 @@ function MobileNav() {
             >
               <ListIcon className="size-5" />
               Content
+            </Link>
+          </SheetClose>
+          <SheetClose asChild>
+            <Link
+              to="/media"
+              className={`flex items-center gap-4 rounded-xl px-4 py-5 text-base font-medium transition-colors ${isActive('/media')
+                ? 'bg-accent text-accent-foreground'
+                : 'hover:bg-accent/50'
+                }`}
+            >
+              <FilmIcon className="size-5" />
+              Media
             </Link>
           </SheetClose>
           <SheetClose asChild>

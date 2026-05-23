@@ -129,3 +129,10 @@ export interface ImpressionsHistoryData {
   previous28DaysTotal: number;
   deltaPercent: number | null;
 }
+
+export interface MediaItem {
+  name: string;
+  url: string;
+  createdAt: string;
+  posted: boolean;
+}
