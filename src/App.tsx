@@ -6,6 +6,7 @@ import { Auth } from './pages/auth';
 import { Content } from './pages/content';
 import { Evaluations } from './pages/evaluations';
 import { Home } from './pages/home';
+import { Media } from './pages/media';
 import { Post } from './pages/post';
 import { PostStatus } from './pages/post-status';
 
@@ -21,6 +22,7 @@ export default function App() {
         <Route path="/post" element={<Post />} />
         <Route path="/post/:postId" element={<PostStatus />} />
         <Route path="/content" element={<Content />} />
+        <Route path="/media" element={<Media />} />
         <Route path="/accounts" element={<Accounts />} />
         <Route path="/evaluations" element={<Evaluations />} />
         <Route path="/account/:pathname" element={<Account />} />
