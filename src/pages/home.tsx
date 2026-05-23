@@ -24,6 +24,8 @@ import { useAccountFilter } from '@/hooks/useAccountFilter';
 import { useStats } from '@/hooks/useStats';
 import { ViewsChart } from '@/components/ViewsChart';
 import { useViewsHistory } from '@/hooks/useViewsHistory';
+import { ImpressionsChart } from '@/components/ImpressionsChart';
+import { useImpressionsHistory } from '@/hooks/useImpressionsHistory';
 import { useRecentPosts } from '@/hooks/useRecentPosts';
 import type { PostStatus, PostWithDetails, RankedItem } from '@/types/dashboard';
 
@@ -262,6 +264,7 @@ export function Home() {
     const { accountId } = useAccountFilter();
     const { data, isLoading, error, refetch } = useStats(accountId);
     const { data: viewsHistoryData, isLoading: viewsHistoryLoading } = useViewsHistory(accountId);
+    const { data: impressionsHistoryData, isLoading: impressionsHistoryLoading } = useImpressionsHistory(accountId);
     const { recentPosts, isLoading: recentPostsLoading } = useRecentPosts();
 
     if (error) {
@@ -280,13 +283,31 @@ export function Home() {
 
     return (
         <div className="space-y-10 md:space-y-12">
+            {/* Impressions Overview */}
+            <section>
+                <div className="flex items-center justify-between mb-5">
+                    <h2 className="text-lg font-semibold">Impressions Overview</h2>
+                    <AccountFilter />
+                </div>
+                <ImpressionsChart
+                    data={impressionsHistoryData}
+                    isLoading={impressionsHistoryLoading}
+                />
+            </section>
+
+            {/* Views Overview */}
+            <section>
+                <h2 className="text-lg font-semibold mb-5">Views Overview</h2>
+                <ViewsChart
+                    data={viewsHistoryData}
+                    isLoading={viewsHistoryLoading}
+                    allTimeViews={data?.viewsMetrics.allTime}
+                />
+            </section>
+
             {/* Leaderboards */}
             <section>
-            <div className="flex items-center justify-between mb-5">
-            <h2 className="text-lg font-semibold">Leaderboards</h2>
-                <AccountFilter />
-            </div>
-              
+                <h2 className="text-lg font-semibold mb-5">Leaderboards</h2>
                 <div className="grid gap-4 md:grid-cols-2">
                     <LeaderboardCard
                         title="Posts by User"
@@ -301,16 +322,6 @@ export function Home() {
                         isLoading={isLoading}
                     />
                 </div>
-            </section>
-
-            {/* Views Overview */}
-            <section>
-                <h2 className="text-lg font-semibold mb-5">Views Overview</h2>
-                <ViewsChart
-                    data={viewsHistoryData}
-                    isLoading={viewsHistoryLoading}
-                    allTimeViews={data?.viewsMetrics.allTime}
-                />
             </section>
 
             {/* Recent Posts */}
