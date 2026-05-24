@@ -148,34 +148,6 @@ function TopBar() {
   );
 }
 
-function StatusBar() {
-  const now = useClock();
-  const stamp = now.toLocaleString('en-US', { hour12: false });
-  return (
-    <div className="term-statusbar">
-      <span>
-        <span className="ok">●</span> SYS_OK
-      </span>
-      <span className="sep">│</span>
-      <span>
-        queue: <span className="acc tnum">2</span> pending
-      </span>
-      <span className="sep">│</span>
-      <span>
-        api: <span className="ok">200</span> ·{' '}
-        <span className="tnum">128ms</span>
-      </span>
-      <span className="sep">│</span>
-      <span>
-        build: <span className="acc">v0.42.1-rc</span>
-      </span>
-      <span className="tnum" style={{ marginLeft: 'auto' }}>
-        {stamp}
-      </span>
-    </div>
-  );
-}
-
 export function Layout() {
   return (
     <>
@@ -183,10 +155,9 @@ export function Layout() {
         <AccountsProvider>
           <div className="min-h-screen bg-background flex flex-col">
             <TopBar />
-            <main className="flex-1 w-full max-w-[1440px] mx-auto px-4 md:px-8 py-7 pb-24">
+            <main className="flex-1 w-full max-w-[1440px] mx-auto px-4 md:px-8 py-7 pb-12">
               <Outlet />
             </main>
-            <StatusBar />
           </div>
         </AccountsProvider>
       </SignedIn>

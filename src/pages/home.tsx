@@ -317,7 +317,7 @@ export function Home() {
     return (
         <div className="space-y-10 md:space-y-12">
             {/* Page title */}
-            <div className="-mb-2">
+            <div className="mb-6 md:mb-8">
                 <div className="text-[11px] tracking-[0.12em] uppercase text-[var(--term-text-faint)] font-mono">
                     $ molars --stats --live
                 </div>
@@ -347,7 +347,7 @@ export function Home() {
 
             {/* Impressions Overview */}
             <section>
-                <div className="flex items-center justify-between mb-5">
+                <div className="flex items-center justify-between mb-8">
                     <h2 className="section-title">Impressions Overview</h2>
                     <AccountFilter />
                 </div>
@@ -359,7 +359,7 @@ export function Home() {
 
             {/* Views Overview */}
             <section>
-                <h2 className="section-title mb-5">Views Overview</h2>
+                <h2 className="section-title mb-8">Views Overview</h2>
                 <ViewsChart
                     data={viewsHistoryData}
                     isLoading={viewsHistoryLoading}
@@ -444,7 +444,7 @@ export function Home() {
             {/* Latest Evaluation */}
             {isLoading ? (
                 <section>
-                    <h2 className="section-title mb-5">Latest Evaluation</h2>
+                    <h2 className="section-title mb-8">Latest Evaluation</h2>
                     <Card>
                         <CardContent className="pt-6 space-y-2">
                             <Skeleton className="h-4 w-full" />
@@ -455,7 +455,7 @@ export function Home() {
                 </section>
             ) : data?.latestEvaluation ? (
                 <section>
-                    <h2 className="section-title mb-5">Latest Evaluation</h2>
+                    <h2 className="section-title mb-8">Latest Evaluation</h2>
                     <Card>
                         <CardHeader className="pb-3">
                             <CardDescription>
@@ -484,7 +484,7 @@ export function Home() {
 
             {/* Post Count Metrics */}
             <section>
-                <h2 className="section-title mb-5">Post Volume</h2>
+                <h2 className="section-title mb-8">Post Volume</h2>
                 <div className="grid gap-4 md:grid-cols-3">
                     {isLoading ? (
                         <>
@@ -516,7 +516,7 @@ export function Home() {
 
             {/* Top Posts */}
             <section>
-                <h2 className="section-title mb-5">Top Performing Posts</h2>
+                <h2 className="section-title mb-8">Top Performing Posts</h2>
                 <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
                     {isLoading ? (
                         <>
@@ -538,7 +538,7 @@ export function Home() {
 
             {/* Rankings Section */}
             <section>
-                <h2 className="section-title mb-5">Performance Rankings</h2>
+                <h2 className="section-title mb-8">Performance Rankings</h2>
                 {isLoading ? (
                     <Card>
                         <CardContent className="p-6">

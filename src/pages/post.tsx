@@ -152,11 +152,8 @@ export function Post() {
 
   const isFormDisabled = !selectedAccountId || status === 'loading';
 
-  const selectedAccount = accounts.find((a) => String(a.id) === selectedAccountId);
-  const previewHashtags = hashtags.slice(0, 4);
-
   return (
-    <div className="max-w-6xl mx-auto">
+    <div className="max-w-2xl mx-auto">
       <div className="mb-8">
         <div className="text-[11px] tracking-[0.12em] uppercase text-[var(--term-text-faint)] font-mono">
           $ molars new --interactive
@@ -169,8 +166,7 @@ export function Post() {
         </p>
       </div>
 
-      <div className="grid gap-4 lg:grid-cols-[1fr_320px]">
-        <Card>
+      <Card>
         <form onSubmit={handleSubmit}>
           <CardHeader>
             <CardTitle className="section-title">post.config</CardTitle>
@@ -338,85 +334,7 @@ export function Post() {
             </span>
           </CardFooter>
         </form>
-        </Card>
-
-        {/* Right column — preview + AI suggest */}
-        <div className="space-y-4">
-          <Card>
-            <CardHeader className="border-b border-dashed">
-              <CardTitle className="section-title flex items-center justify-between gap-2">
-                <span>preview</span>
-                <span className="text-[var(--term-text-faint)] normal-case font-normal">9:16</span>
-              </CardTitle>
-            </CardHeader>
-            <CardContent className="pt-4 pb-4">
-              <div className="phone">
-                <div className="phone-bar">
-                  <span>00:14</span>
-                  <span>● live</span>
-                </div>
-                <div className="phone-body">
-                  <div className="phone-thumb">
-                    {videoTitle === 'random' ? 'video preview' : videoTitle}
-                  </div>
-                  <div className="p-3">
-                    <div className="text-primary text-[12px] font-semibold mb-1.5 leading-snug break-words">
-                      {hookText || 'your hook appears here'}
-                    </div>
-                    <div className="text-muted-foreground text-[10px] leading-relaxed break-words line-clamp-3">
-                      {caption || 'caption preview…'}
-                    </div>
-                    {previewHashtags.length > 0 && (
-                      <div className="mt-2">
-                        {previewHashtags.map((t, i) => (
-                          <span key={i} className="tag-pill" style={{ fontSize: 9 }}>
-                            #{t}
-                          </span>
-                        ))}
-                      </div>
-                    )}
-                  </div>
-                </div>
-              </div>
-              {selectedAccount && (
-                <div className="text-[10px] text-[var(--term-text-faint)] text-center mt-3 font-mono uppercase tracking-[0.12em]">
-                  → [{selectedAccount.name}]
-                </div>
-              )}
-            </CardContent>
-          </Card>
-
-          {hookSuggestions.length > 0 && (
-            <Card>
-              <CardHeader className="border-b border-dashed">
-                <CardTitle className="section-title flex items-center justify-between gap-2">
-                  <span>ai_suggest</span>
-                  <span className="text-[var(--term-text-faint)] normal-case font-normal">hooks</span>
-                </CardTitle>
-              </CardHeader>
-              <CardContent className="pt-3 pb-4">
-                <div className="text-muted-foreground text-[11px] mb-2.5 font-mono">
-                  based on recent top performers:
-                </div>
-                <div className="flex flex-col gap-1.5">
-                  {hookSuggestions.slice(0, 3).map((s, i) => (
-                    <button
-                      key={i}
-                      type="button"
-                      onClick={() => setHookText(s)}
-                      disabled={isFormDisabled}
-                      className="flex items-center justify-between gap-2 text-left text-[12px] font-mono px-3 py-2 border border-border bg-[var(--term-bg-elev)] hover:border-[var(--term-border-hi)] transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
-                    >
-                      <span className="truncate flex-1">" {s} "</span>
-                      <span className="text-primary text-[10px] shrink-0">use →</span>
-                    </button>
-                  ))}
-                </div>
-              </CardContent>
-            </Card>
-          )}
-        </div>
-      </div>
+      </Card>
     </div>
   );
 }
