@@ -155,8 +155,13 @@ export function Post() {
   return (
     <div className="max-w-2xl mx-auto">
       <div className="mb-8">
-        <h1 className="text-2xl font-bold tracking-tight">Post Reel</h1>
-        <p className="text-muted-foreground mt-2">
+        <div className="text-[11px] tracking-[0.12em] uppercase text-[var(--term-text-faint)] font-mono">
+          $ molars new --interactive
+        </div>
+        <h1 className="font-mono text-2xl md:text-[28px] font-semibold tracking-tight lowercase mt-2">
+          compose<span className="cursor" aria-hidden />
+        </h1>
+        <p className="text-muted-foreground mt-2 text-sm">
           Create a new reel post. Leave fields empty to use randomly generated content.
         </p>
       </div>
@@ -164,7 +169,7 @@ export function Post() {
       <Card>
         <form onSubmit={handleSubmit}>
           <CardHeader>
-            <CardTitle>New Reel</CardTitle>
+            <CardTitle className="section-title">post.config</CardTitle>
             <CardDescription>
               Configure your reel's caption, hook text, and hashtags
             </CardDescription>
@@ -290,38 +295,43 @@ export function Post() {
 
             {/* Error Message */}
             {status === 'error' && errorMessage && (
-              <div className="flex items-center gap-2 p-3 rounded-md bg-destructive/10 text-destructive border border-destructive/20">
+              <div className="flex items-center gap-2 p-3 bg-destructive/10 text-destructive border border-destructive/40">
                 <AlertCircle className="size-4 shrink-0" />
                 <span className="text-sm">{errorMessage}</span>
               </div>
             )}
           </CardContent>
 
-          <CardFooter className="flex justify-between border-t pt-6">
-            <Button
-              type="button"
-              variant="outline"
-              onClick={resetForm}
-              disabled={status === 'loading'}
-            >
-              Clear
-            </Button>
-            <Button
-              type="submit"
-              disabled={isFormDisabled}
-            >
-              {status === 'loading' ? (
-                <>
-                  <Loader2 className="animate-spin" />
-                  Posting...
-                </>
-              ) : (
-                <>
-                  <Send />
-                  Post Reel
-                </>
-              )}
-            </Button>
+          <CardFooter className="flex justify-between items-center border-t border-dashed pt-6 gap-4 flex-wrap">
+            <div className="flex items-center gap-2">
+              <Button
+                type="button"
+                variant="outline"
+                onClick={resetForm}
+                disabled={status === 'loading'}
+              >
+                Clear
+              </Button>
+              <Button
+                type="submit"
+                disabled={isFormDisabled}
+              >
+                {status === 'loading' ? (
+                  <>
+                    <Loader2 className="animate-spin" />
+                    Posting...
+                  </>
+                ) : (
+                  <>
+                    <Send />
+                    Post Reel
+                  </>
+                )}
+              </Button>
+            </div>
+            <span className="text-[11px] text-[var(--term-text-faint)] font-mono">
+              <span className="kbd">⌘</span> <span className="kbd">↵</span> to ship
+            </span>
           </CardFooter>
         </form>
       </Card>

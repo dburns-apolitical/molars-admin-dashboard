@@ -21,6 +21,7 @@ import {
 } from '@/components/ui/table';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { useAccountFilter } from '@/hooks/useAccountFilter';
+import { useAccounts } from '@/contexts/AccountsContext';
 import { useStats } from '@/hooks/useStats';
 import { ViewsChart } from '@/components/ViewsChart';
 import { useViewsHistory } from '@/hooks/useViewsHistory';
@@ -114,7 +115,7 @@ function LeaderboardCard({
                                 <Skeleton className="h-4 w-20" />
                                 <Skeleton className="h-4 w-12" />
                             </div>
-                            <Skeleton className="h-2 w-full rounded-full" />
+                            <Skeleton className="h-1 w-full" />
                         </div>
                     ))}
                 </CardContent>
@@ -135,15 +136,20 @@ function LeaderboardCard({
                     const percentage = (value / maxValue) * 100;
                     return (
                         <div key={index} className="space-y-1.5">
-                            <div className="flex justify-between text-sm">
-                                <span className="font-medium">{index === 0 ? '🥇' : index === 1 ? '🥈' : '💩'} {item.name}</span>
-                                <span className="tabular-nums text-muted-foreground">
+                            <div className="flex justify-between text-sm items-center">
+                                <span className="flex items-center gap-2.5">
+                                    <span className={`tabular-nums text-[11px] ${index === 0 ? 'text-primary' : 'text-[var(--term-text-faint)]'}`}>
+                                        {String(index + 1).padStart(2, '0')}
+                                    </span>
+                                    <span className="font-medium">{item.name}</span>
+                                </span>
+                                <span className="tabular-nums text-muted-foreground text-[12px]">
                                     {formatValue(value)}
                                 </span>
                             </div>
-                            <div className="h-2 w-full rounded-full bg-primary/20">
+                            <div className="h-1 w-full bg-border">
                                 <div
-                                    className="h-full rounded-full bg-primary transition-all"
+                                    className="h-full bg-primary transition-all"
                                     style={{ width: `${percentage}%` }}
                                 />
                             </div>
@@ -160,15 +166,41 @@ function LeaderboardCard({
 
 function MetricsCardSkeleton() {
     return (
-        <Card>
-            <CardHeader className="pb-2">
-                <Skeleton className="h-4 w-24" />
-            </CardHeader>
-            <CardContent>
-                <Skeleton className="h-8 w-32 mb-2" />
-                <Skeleton className="h-4 w-16" />
-            </CardContent>
-        </Card>
+        <div className="metric">
+            <Skeleton className="h-3 w-24" />
+            <Skeleton className="h-9 w-32 mt-3" />
+            <Skeleton className="h-3 w-20 mt-3" />
+            <Skeleton className="h-[18px] w-full mt-3" />
+        </div>
+    );
+}
+
+function MetricCard({
+    label,
+    value,
+    delta,
+    bars = [2, 3, 2, 4, 5, 4, 6],
+}: {
+    label: string;
+    value: number;
+    delta?: string;
+    bars?: number[];
+}) {
+    return (
+        <div className="metric">
+            <div className="metric-label">{label}</div>
+            <div className="metric-value">{value.toLocaleString()}</div>
+            {delta && <div className="metric-delta up">{delta}</div>}
+            <div className="metric-delta-bar">
+                {bars.map((b, i) => (
+                    <span
+                        key={i}
+                        className={i === bars.length - 1 ? 'hi' : ''}
+                        style={{ height: `${10 + b * 4}px` }}
+                    />
+                ))}
+            </div>
+        </div>
     );
 }
 
@@ -262,6 +294,7 @@ function RankedItemsTable({ items, label }: { items: RankedItem[]; label: string
 
 export function Home() {
     const { accountId } = useAccountFilter();
+    const { accounts } = useAccounts();
     const { data, isLoading, error, refetch } = useStats(accountId);
     const { data: viewsHistoryData, isLoading: viewsHistoryLoading } = useViewsHistory(accountId);
     const { data: impressionsHistoryData, isLoading: impressionsHistoryLoading } = useImpressionsHistory(accountId);
@@ -273,7 +306,7 @@ export function Home() {
                 <p className="text-destructive">Error loading dashboard: {error.message}</p>
                 <button
                     onClick={refetch}
-                    className="px-4 py-2 bg-primary text-primary-foreground rounded-md hover:bg-primary/90 transition-colors"
+                    className="px-4 py-2 bg-primary text-primary-foreground font-mono lowercase tracking-wider text-xs hover:bg-[#ffc04a] transition-colors"
                 >
                     Retry
                 </button>
@@ -283,10 +316,39 @@ export function Home() {
 
     return (
         <div className="space-y-10 md:space-y-12">
+            {/* Page title */}
+            <div className="mb-6 md:mb-8">
+                <div className="text-[11px] tracking-[0.12em] uppercase text-[var(--term-text-faint)] font-mono">
+                    $ molars --stats --live
+                </div>
+                <div className="flex items-baseline gap-3.5 mt-2 flex-wrap">
+                    <h1 className="font-mono text-2xl md:text-[28px] font-semibold tracking-tight lowercase">
+                        dashboard<span className="cursor" aria-hidden />
+                    </h1>
+                    <span className="text-[var(--term-text-faint)] text-xs">
+                        tracking <span className="text-primary tabular-nums">{accounts.length}</span> accounts
+                        {data && (
+                            <>
+                                {' · '}
+                                <span className="text-primary tabular-nums">
+                                    {data.postCountMetrics.allTime}
+                                </span>{' '}
+                                posts shipped
+                                {' · '}
+                                <span className="text-primary tabular-nums">
+                                    {formatNumber(data.viewsMetrics.allTime)}
+                                </span>{' '}
+                                all-time views
+                            </>
+                        )}
+                    </span>
+                </div>
+            </div>
+
             {/* Impressions Overview */}
             <section>
-                <div className="flex items-center justify-between mb-5">
-                    <h2 className="text-lg font-semibold">Impressions Overview</h2>
+                <div className="flex items-center justify-between mb-8">
+                    <h2 className="section-title">Impressions Overview</h2>
                     <AccountFilter />
                 </div>
                 <ImpressionsChart
@@ -297,7 +359,7 @@ export function Home() {
 
             {/* Views Overview */}
             <section>
-                <h2 className="text-lg font-semibold mb-5">Views Overview</h2>
+                <h2 className="section-title mb-8">Views Overview</h2>
                 <ViewsChart
                     data={viewsHistoryData}
                     isLoading={viewsHistoryLoading}
@@ -307,7 +369,7 @@ export function Home() {
 
             {/* Leaderboards */}
             <section>
-                <h2 className="text-lg font-semibold mb-5">Leaderboards</h2>
+                <h2 className="section-title mb-5">Leaderboards</h2>
                 <div className="grid gap-4 md:grid-cols-2">
                     <LeaderboardCard
                         title="Posts by User"
@@ -326,19 +388,24 @@ export function Home() {
 
             {/* Recent Posts */}
             <section>
-                <h2 className="text-lg font-semibold mb-5">Recent Posts</h2>
+                <div className="flex items-center justify-between mb-5">
+                    <h2 className="section-title">Recent Posts</h2>
+                    <Link to="/content" className="text-[11px] text-muted-foreground hover:text-primary transition-colors">
+                        view all →
+                    </Link>
+                </div>
                 {recentPostsLoading ? (
                     <div className="space-y-2">
                         {[...Array(3)].map((_, i) => (
-                            <div key={i} className="bg-secondary/50 rounded-lg px-3 py-2.5">
+                            <div key={i} className="bg-[var(--term-bg-elev)] border border-border px-3 py-2.5">
                                 <div className="flex items-center justify-between">
                                     <div className="flex items-center gap-3">
                                         <Skeleton className="h-4 w-24" />
                                         <Skeleton className="h-4 w-48" />
                                     </div>
                                     <div className="flex items-center gap-2">
-                                        <Skeleton className="h-5 w-16 rounded-full" />
-                                        <Skeleton className="h-5 w-16 rounded-full" />
+                                        <Skeleton className="h-5 w-16" />
+                                        <Skeleton className="h-5 w-16" />
                                     </div>
                                 </div>
                             </div>
@@ -350,10 +417,10 @@ export function Home() {
                             const statusStyle = getStatusStyle(post.status);
                             const recency = getRecencyInfo(post.created_at);
                             return (
-                                <div key={index} className="bg-secondary/50 rounded-lg px-3 py-2.5">
-                                    <div className="flex items-center justify-between">
-                                        <div className="flex items-center gap-3 min-w-0 flex-1 mr-3">
-                                            <span className="text-muted-foreground text-sm whitespace-nowrap">{post.account_name}</span>
+                                <div key={index} className="bg-[var(--term-bg-elev)] border border-border px-3 py-2.5 hover:border-[var(--term-border-hi)] transition-colors">
+                                    <div className="flex items-center justify-between gap-3">
+                                        <div className="flex items-center gap-3 min-w-0 flex-1">
+                                            <span className="text-[var(--term-text-faint)] text-[11px] whitespace-nowrap">[{post.account_name}]</span>
                                             <span className="text-sm truncate">{post.video_title}</span>
                                         </div>
                                         <div className="flex items-center gap-2 flex-shrink-0">
@@ -377,7 +444,7 @@ export function Home() {
             {/* Latest Evaluation */}
             {isLoading ? (
                 <section>
-                    <h2 className="text-lg font-semibold mb-5">Latest Evaluation</h2>
+                    <h2 className="section-title mb-8">Latest Evaluation</h2>
                     <Card>
                         <CardContent className="pt-6 space-y-2">
                             <Skeleton className="h-4 w-full" />
@@ -388,7 +455,7 @@ export function Home() {
                 </section>
             ) : data?.latestEvaluation ? (
                 <section>
-                    <h2 className="text-lg font-semibold mb-5">Latest Evaluation</h2>
+                    <h2 className="section-title mb-8">Latest Evaluation</h2>
                     <Card>
                         <CardHeader className="pb-3">
                             <CardDescription>
@@ -417,7 +484,7 @@ export function Home() {
 
             {/* Post Count Metrics */}
             <section>
-                <h2 className="text-lg font-semibold mb-5">Number of Posts</h2>
+                <h2 className="section-title mb-8">Post Volume</h2>
                 <div className="grid gap-4 md:grid-cols-3">
                     {isLoading ? (
                         <>
@@ -427,36 +494,21 @@ export function Home() {
                         </>
                     ) : (
                         <>
-                            <Card>
-                                <CardHeader className="pb-2">
-                                    <CardDescription>All Time</CardDescription>
-                                </CardHeader>
-                                <CardContent>
-                                    <div className="text-3xl font-bold tracking-tight">
-                                        {formatNumber(data?.postCountMetrics.allTime ?? 0)}
-                                    </div>
-                                </CardContent>
-                            </Card>
-                            <Card>
-                                <CardHeader className="pb-2">
-                                    <CardDescription>Last 28 Days</CardDescription>
-                                </CardHeader>
-                                <CardContent>
-                                    <div className="text-3xl font-bold tracking-tight">
-                                        {formatNumber(data?.postCountMetrics.last28Days ?? 0)}
-                                    </div>
-                                </CardContent>
-                            </Card>
-                            <Card>
-                                <CardHeader className="pb-2">
-                                    <CardDescription>Last 7 Days</CardDescription>
-                                </CardHeader>
-                                <CardContent>
-                                    <div className="text-3xl font-bold tracking-tight">
-                                        {formatNumber(data?.postCountMetrics.last7Days ?? 0)}
-                                    </div>
-                                </CardContent>
-                            </Card>
+                            <MetricCard
+                                label="all_time"
+                                value={data?.postCountMetrics.allTime ?? 0}
+                                bars={[2, 3, 2, 4, 5, 4, 6]}
+                            />
+                            <MetricCard
+                                label="last_28d"
+                                value={data?.postCountMetrics.last28Days ?? 0}
+                                bars={[3, 2, 4, 3, 5, 4, 5]}
+                            />
+                            <MetricCard
+                                label="last_7d"
+                                value={data?.postCountMetrics.last7Days ?? 0}
+                                bars={[1, 2, 1, 3, 2, 3, 4]}
+                            />
                         </>
                     )}
                 </div>
@@ -464,7 +516,7 @@ export function Home() {
 
             {/* Top Posts */}
             <section>
-                <h2 className="text-lg font-semibold mb-5">Top Performing Posts</h2>
+                <h2 className="section-title mb-8">Top Performing Posts</h2>
                 <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
                     {isLoading ? (
                         <>
@@ -486,7 +538,7 @@ export function Home() {
 
             {/* Rankings Section */}
             <section>
-                <h2 className="text-lg font-semibold mb-5">Performance Rankings</h2>
+                <h2 className="section-title mb-8">Performance Rankings</h2>
                 {isLoading ? (
                     <Card>
                         <CardContent className="p-6">

@@ -1,9 +1,12 @@
 export function DeltaIndicator({ delta }: { delta: number | null }) {
-    if (delta === null) return <span className="text-muted-foreground text-sm">N/A</span>;
+    if (delta === null) return <span className="text-muted-foreground text-sm font-mono">N/A</span>;
 
     const isPositive = delta >= 0;
     return (
-        <span className={`text-sm font-medium ${isPositive ? 'text-emerald-500' : 'text-rose-500'}`}>
+        <span
+            className="font-mono text-[11px] tabular-nums"
+            style={{ color: isPositive ? 'var(--term-ok)' : 'var(--term-danger)' }}
+        >
             {isPositive ? '↑' : '↓'} {Math.abs(delta).toFixed(1)}%
         </span>
     );

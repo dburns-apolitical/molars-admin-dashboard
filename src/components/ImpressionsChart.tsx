@@ -23,10 +23,10 @@ function formatTooltipDate(dateStr: string): string {
 }
 
 const PLATFORM_COLORS = {
-    instagram: 'hsl(292, 84%, 61%)',
-    youtube:   'hsl(0, 84%, 60%)',
-    tiktok:    'hsl(180, 84%, 40%)',
-    twitter:   'hsl(203, 89%, 53%)',
+    tiktok:    'var(--term-accent)',
+    instagram: '#ff5cf2',
+    youtube:   '#ff6b6b',
+    twitter:   '#74c0fc',
 } as const;
 
 interface ImpressionsChartProps {
@@ -66,14 +66,22 @@ function ChartTooltip({ active, payload, label }: any) {
     if (!active || !payload?.length) return null;
     const total = (payload as { value: number }[]).reduce((sum, p) => sum + p.value, 0);
     return (
-        <div className="rounded-md border bg-popover px-3 py-2 text-sm shadow-md">
-            <p className="font-medium">{formatTooltipDate(label as string)}</p>
-            <p className="text-muted-foreground">{formatNumber(total)} total</p>
-            {(payload as { name: string; value: number; color: string }[]).map(p =>
+        <div className="border border-primary bg-[var(--term-bg-elev)] px-3 py-2 font-mono text-[11px] min-w-[160px]">
+            <p className="text-[10px] tracking-[0.1em] uppercase text-[var(--term-text-faint)]">
+                {formatTooltipDate(label as string)}
+            </p>
+            <p className="text-primary tabular-nums text-sm font-semibold mt-0.5 mb-1.5">
+                {formatNumber(total)}
+            </p>
+            {(payload as { name: string; value: number; color: string }[]).slice().reverse().map(p =>
                 p.value > 0 ? (
-                    <p key={p.name} style={{ color: p.color }}>
-                        {p.name}: {formatNumber(p.value)}
-                    </p>
+                    <div key={p.name} className="flex items-center justify-between gap-2 py-px">
+                        <span className="inline-flex items-center gap-1.5">
+                            <span className="inline-block size-2" style={{ background: p.color }} />
+                            <span className="text-muted-foreground lowercase">{p.name}</span>
+                        </span>
+                        <span className="tabular-nums">{formatNumber(p.value)}</span>
+                    </div>
                 ) : null
             )}
         </div>
@@ -121,26 +129,52 @@ export function ImpressionsChart({ data, isLoading }: ImpressionsChartProps) {
         data.dailyImpressions.filter(d => d.day >= cutoffStr)
     );
 
+    const platformTotals = {
+        tiktok:    chartData.reduce((s, d) => s + d.tiktok,    0),
+        instagram: chartData.reduce((s, d) => s + d.instagram, 0),
+        youtube:   chartData.reduce((s, d) => s + d.youtube,   0),
+        twitter:   chartData.reduce((s, d) => s + d.twitter,   0),
+    };
+    const platformOrder: Array<keyof typeof platformTotals> = ['tiktok', 'instagram', 'youtube', 'twitter'];
+
     return (
         <Card>
             <CardHeader className="pb-2">
                 <CardDescription>Impressions Over Last 28 Days</CardDescription>
             </CardHeader>
             <CardContent>
+                <div className="chart-legend">
+                    <div className="chart-legend-item">
+                        <span className="chart-legend-dot" />
+                        impressions · last 28d · by platform
+                    </div>
+                    {platformOrder.map((k) => (
+                        <div key={k} className="chart-legend-item">
+                            <span
+                                className="chart-legend-dot"
+                                style={{ background: PLATFORM_COLORS[k] }}
+                            />
+                            {k}{' '}
+                            <span className="text-[var(--term-text-faint)] tabular-nums">
+                                {formatNumber(platformTotals[k])}
+                            </span>
+                        </div>
+                    ))}
+                </div>
                 <ResponsiveContainer width="100%" height={250}>
                     <BarChart data={chartData} margin={{ top: 5, right: 5, left: -20, bottom: 0 }}>
                         <XAxis dataKey="day" hide />
                         <YAxis
                             tickFormatter={(v: number) => formatNumber(v)}
-                            tick={{ fontSize: 12 }}
+                            tick={{ fontSize: 10, fontFamily: 'var(--mono)', fill: 'var(--term-text-faint)' }}
                             tickLine={false}
                             axisLine={false}
                         />
-                        <Tooltip content={<ChartTooltip />} />
-                        <Bar dataKey="instagram" stackId="a" fill={PLATFORM_COLORS.instagram} name="Instagram" />
-                        <Bar dataKey="youtube"   stackId="a" fill={PLATFORM_COLORS.youtube}   name="YouTube" />
-                        <Bar dataKey="tiktok"    stackId="a" fill={PLATFORM_COLORS.tiktok}    name="TikTok" />
-                        <Bar dataKey="twitter"   stackId="a" fill={PLATFORM_COLORS.twitter}   name="Twitter" radius={[2, 2, 0, 0]} />
+                        <Tooltip content={<ChartTooltip />} cursor={{ fill: 'var(--term-accent-fade)' }} />
+                        <Bar dataKey="tiktok"    stackId="a" fill={PLATFORM_COLORS.tiktok}    name="tiktok" />
+                        <Bar dataKey="instagram" stackId="a" fill={PLATFORM_COLORS.instagram} name="instagram" />
+                        <Bar dataKey="youtube"   stackId="a" fill={PLATFORM_COLORS.youtube}   name="youtube" />
+                        <Bar dataKey="twitter"   stackId="a" fill={PLATFORM_COLORS.twitter}   name="twitter" />
                     </BarChart>
                 </ResponsiveContainer>
 

@@ -52,10 +52,16 @@ function ChartTooltip({ active, payload, label }: any) {
     if (!active || !payload?.length) return null;
     const data = payload[0].payload;
     return (
-        <div className="rounded-md border bg-popover px-3 py-2 text-sm shadow-md">
-            <p className="font-medium">{formatTooltipDate(label)}</p>
-            <p className="text-muted-foreground">{formatNumber(payload[0].value)} views</p>
-            <p className="text-muted-foreground">{data.postCount} {data.postCount === 1 ? 'post' : 'posts'}</p>
+        <div className="border border-primary bg-[var(--term-bg-elev)] px-3 py-2 font-mono text-[11px]">
+            <p className="text-[10px] tracking-[0.1em] uppercase text-[var(--term-text-faint)]">
+                {formatTooltipDate(label)}
+            </p>
+            <p className="text-primary tabular-nums text-sm font-semibold mt-0.5">
+                {formatNumber(payload[0].value)} <span className="text-[var(--term-text-faint)] font-normal">views</span>
+            </p>
+            <p className="text-muted-foreground tabular-nums">
+                {data.postCount} {data.postCount === 1 ? 'post' : 'posts'}
+            </p>
         </div>
     );
 }
@@ -123,8 +129,8 @@ export function ViewsChart({ data, isLoading, allTimeViews }: ViewsChartProps) {
                     <AreaChart data={chartData} margin={{ top: 5, right: 5, left: -20, bottom: 0 }}>
                         <defs>
                             <linearGradient id="viewsFill" x1="0" y1="0" x2="0" y2="1">
-                                <stop offset="5%" stopColor="hsl(217, 91%, 60%)" stopOpacity={0.3} />
-                                <stop offset="95%" stopColor="hsl(217, 91%, 60%)" stopOpacity={0} />
+                                <stop offset="5%" stopColor="var(--term-accent)" stopOpacity={0.25} />
+                                <stop offset="95%" stopColor="var(--term-accent)" stopOpacity={0} />
                             </linearGradient>
                         </defs>
                         <XAxis
@@ -133,16 +139,16 @@ export function ViewsChart({ data, isLoading, allTimeViews }: ViewsChartProps) {
                         />
                         <YAxis
                             tickFormatter={(v: number) => formatNumber(v)}
-                            tick={{ fontSize: 12 }}
+                            tick={{ fontSize: 10, fontFamily: 'var(--mono)', fill: 'var(--term-text-faint)' }}
                             tickLine={false}
                             axisLine={false}
                         />
-                        <Tooltip content={<ChartTooltip />} />
+                        <Tooltip content={<ChartTooltip />} cursor={{ stroke: 'var(--term-accent)', strokeDasharray: '2 3', strokeOpacity: 0.5 }} />
                         <Area
                             type="monotone"
                             dataKey="views"
-                            stroke="hsl(217, 91%, 60%)"
-                            strokeWidth={2}
+                            stroke="var(--term-accent)"
+                            strokeWidth={1.5}
                             fill="url(#viewsFill)"
                         />
                     </AreaChart>

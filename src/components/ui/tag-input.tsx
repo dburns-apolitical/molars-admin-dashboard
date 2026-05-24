@@ -81,7 +81,7 @@ function TagInput({
     <div className="space-y-2">
       <div
         className={cn(
-          "flex flex-wrap gap-2 min-h-[42px] w-full rounded-md border border-input bg-transparent px-3 py-2 text-base shadow-xs transition-colors focus-within:ring-1 focus-within:ring-ring",
+          "flex flex-wrap gap-2 min-h-[42px] w-full border border-input bg-[var(--term-bg-elev)] px-3 py-2 font-mono text-[13px] transition-colors focus-within:border-primary",
           disabled && "cursor-not-allowed opacity-50",
           className
         )}
@@ -101,7 +101,7 @@ function TagInput({
                   e.stopPropagation()
                   removeTag(tag)
                 }}
-                className="ml-1 rounded-full p-0.5 hover:bg-muted-foreground/20 transition-colors"
+                className="ml-1 p-0.5 hover:bg-[var(--term-accent-fade)] transition-colors"
               >
                 <X className="size-3" />
                 <span className="sr-only">Remove {tag}</span>
@@ -122,7 +122,7 @@ function TagInput({
             onBlur={handleBlur}
             placeholder={value.length === 0 ? placeholder : ""}
             disabled={disabled}
-            className="flex-1 min-w-[120px] bg-transparent outline-none placeholder:text-muted-foreground text-sm disabled:cursor-not-allowed"
+            className="flex-1 min-w-[120px] bg-transparent outline-none placeholder:text-[var(--term-text-faint)] font-mono text-[13px] disabled:cursor-not-allowed"
           />
         )}
       </div>

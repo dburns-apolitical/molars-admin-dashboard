@@ -98,7 +98,7 @@ function AccountForm({
   return (
     <Card className="mb-6">
       <CardHeader>
-        <CardTitle className="text-lg">
+        <CardTitle className="section-title">
           {isEditing ? 'Edit Account' : 'Add Account'}
         </CardTitle>
       </CardHeader>
@@ -329,10 +329,15 @@ export function Accounts() {
         </Button>
       </div>
 
-      <div className="mb-8 flex items-center justify-between">
+      <div className="mb-8 flex items-end justify-between gap-4 flex-wrap">
         <div>
-          <h1 className="text-2xl font-bold tracking-tight">Accounts</h1>
-          <p className="text-muted-foreground">Manage accounts and credentials.</p>
+          <div className="text-[11px] tracking-[0.12em] uppercase text-[var(--term-text-faint)] font-mono">
+            $ molars accounts --status
+          </div>
+          <h1 className="font-mono text-2xl md:text-[28px] font-semibold tracking-tight lowercase mt-2">
+            accounts<span className="cursor" aria-hidden />
+          </h1>
+          <p className="text-muted-foreground text-sm mt-1">Manage accounts and credentials.</p>
         </div>
         {!showForm && !editingAccount && (
           <Button onClick={() => setShowForm(true)}>
@@ -354,7 +359,7 @@ export function Accounts() {
 
       <Card>
         <CardHeader>
-          <CardTitle className="text-lg">Accounts ({accounts.length})</CardTitle>
+          <CardTitle className="section-title">accounts <span className="text-[var(--term-text-faint)] normal-case">[{accounts.length}]</span></CardTitle>
         </CardHeader>
         <CardContent>
           {isLoading ? (
@@ -414,7 +419,7 @@ export function Accounts() {
                       <TableRow>
                         <TableCell colSpan={4} className="bg-muted/30 px-6 py-4">
                           <div className="space-y-3">
-                            <p className="text-sm font-semibold">Credentials</p>
+                            <p className="section-title">Credentials</p>
 
                             {(!account.credentials || account.credentials.length === 0) &&
                               addingCredentialForAccountId !== account.id && (
@@ -424,7 +429,7 @@ export function Accounts() {
                             {account.credentials && account.credentials.map((credential) => (
                               <div key={credential.id}>
                                 {editingCredentialId === credential.id ? (
-                                  <div className="space-y-3 rounded-md border bg-background p-3">
+                                  <div className="space-y-3 border bg-background p-3">
                                     {credentialFormData.platform === 'instagram_direct' && (
                                       <>
                                         <div className="space-y-1">
@@ -530,7 +535,7 @@ export function Accounts() {
                                     </div>
                                   </div>
                                 ) : (
-                                  <div className="flex items-center justify-between rounded-md border bg-background px-3 py-2">
+                                  <div className="flex items-center justify-between border bg-background px-3 py-2">
                                     <div className="flex items-center gap-3">
                                       <Badge
                                         variant={
@@ -590,11 +595,11 @@ export function Accounts() {
                             ))}
 
                             {addingCredentialForAccountId === account.id ? (
-                              <div className="space-y-3 rounded-md border bg-background p-3">
+                              <div className="space-y-3 border bg-background p-3">
                                 <div className="space-y-1">
                                   <Label className="text-xs">Platform</Label>
                                   <select
-                                    className="flex h-9 w-full rounded-md border border-input bg-transparent px-3 py-1 text-sm shadow-xs transition-colors placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring"
+                                    className="flex h-9 w-full border border-input bg-[var(--term-bg-elev)] px-3 py-1 font-mono text-[13px] transition-colors focus-visible:outline-none focus-visible:border-primary"
                                     value={credentialFormData.platform}
                                     onChange={(e) =>
                                       setCredentialFormData({
