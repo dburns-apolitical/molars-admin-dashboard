@@ -59,72 +59,107 @@
 }
 
 :root {
-  --radius: 0.625rem;
-  --background: oklch(1 0 0);
-  --foreground: oklch(0.145 0 0);
-  --card: oklch(1 0 0);
-  --card-foreground: oklch(0.145 0 0);
-  --popover: oklch(1 0 0);
-  --popover-foreground: oklch(0.145 0 0);
-  --primary: oklch(0.205 0 0);
-  --primary-foreground: oklch(0.985 0 0);
-  --secondary: oklch(0.97 0 0);
-  --secondary-foreground: oklch(0.205 0 0);
-  --muted: oklch(0.97 0 0);
-  --muted-foreground: oklch(0.556 0 0);
-  --accent: oklch(0.97 0 0);
-  --accent-foreground: oklch(0.205 0 0);
-  --destructive: oklch(0.577 0.245 27.325);
-  --border: oklch(0.922 0 0);
-  --input: oklch(0.922 0 0);
-  --ring: oklch(0.708 0 0);
-  --chart-1: oklch(0.646 0.222 41.116);
-  --chart-2: oklch(0.6 0.118 184.704);
-  --chart-3: oklch(0.398 0.07 227.392);
-  --chart-4: oklch(0.828 0.189 84.429);
-  --chart-5: oklch(0.769 0.188 70.08);
-  --sidebar: oklch(0.985 0 0);
-  --sidebar-foreground: oklch(0.145 0 0);
-  --sidebar-primary: oklch(0.205 0 0);
-  --sidebar-primary-foreground: oklch(0.985 0 0);
-  --sidebar-accent: oklch(0.97 0 0);
-  --sidebar-accent-foreground: oklch(0.205 0 0);
-  --sidebar-border: oklch(0.922 0 0);
-  --sidebar-ring: oklch(0.708 0 0);
+  /* Sharp corners — terminal aesthetic */
+  --radius: 0;
+
+  /* Terminal palette — deep cool-dark surfaces */
+  --term-bg:           #0a0c0a;
+  --term-bg-elev:      #10130d;
+  --term-surface:      #161a13;
+  --term-surface-hi:   #1c2118;
+  --term-border:       #232a1d;
+  --term-border-hi:    #364031;
+  --term-border-bright:#4a5840;
+  --term-text:         #e6ecd6;
+  --term-text-dim:     #98a085;
+  --term-text-faint:   #5a6151;
+  --term-text-ghost:   #3a4034;
+
+  /* Accent (orange, committed) */
+  --term-accent:      #ffb020;
+  --term-accent-dim:  rgba(255, 176, 32, 0.5);
+  --term-accent-soft: rgba(255, 176, 32, 0.12);
+  --term-accent-fade: rgba(255, 176, 32, 0.06);
+
+  /* Status hues */
+  --term-ok:     #6efacc;
+  --term-warn:   #ffc857;
+  --term-danger: #ff6b6b;
+  --term-info:   #74c0fc;
+
+  /* Mono type stack */
+  --mono: 'JetBrains Mono', 'IBM Plex Mono', 'Menlo', monospace;
+
+  /* Dot-grid toggle */
+  --grid-on: 1;
+
+  /* shadcn theme tokens — mapped onto the terminal palette */
+  --background:            var(--term-bg);
+  --foreground:            var(--term-text);
+  --card:                  var(--term-surface);
+  --card-foreground:       var(--term-text);
+  --popover:               var(--term-surface);
+  --popover-foreground:    var(--term-text);
+  --primary:               var(--term-accent);
+  --primary-foreground:    #000000;
+  --secondary:             var(--term-surface-hi);
+  --secondary-foreground:  var(--term-text);
+  --muted:                 var(--term-bg-elev);
+  --muted-foreground:      var(--term-text-dim);
+  --accent:                var(--term-accent-fade);
+  --accent-foreground:     var(--term-accent);
+  --destructive:           var(--term-danger);
+  --border:                var(--term-border);
+  --input:                 var(--term-border);
+  --ring:                  var(--term-accent);
+  --chart-1:               var(--term-accent);
+  --chart-2:               #ff5cf2;
+  --chart-3:               var(--term-danger);
+  --chart-4:               var(--term-info);
+  --chart-5:               var(--term-ok);
+  --sidebar:                       var(--term-bg-elev);
+  --sidebar-foreground:            var(--term-text);
+  --sidebar-primary:               var(--term-accent);
+  --sidebar-primary-foreground:    #000000;
+  --sidebar-accent:                var(--term-accent-fade);
+  --sidebar-accent-foreground:     var(--term-accent);
+  --sidebar-border:                var(--term-border);
+  --sidebar-ring:                  var(--term-accent);
 }
 
 .dark {
-  --background: oklch(0.145 0 0);
-  --foreground: oklch(0.985 0 0);
-  --card: oklch(0.205 0 0);
-  --card-foreground: oklch(0.985 0 0);
-  --popover: oklch(0.205 0 0);
-  --popover-foreground: oklch(0.985 0 0);
-  --primary: oklch(0.922 0 0);
-  --primary-foreground: oklch(0.205 0 0);
-  --secondary: oklch(0.269 0 0);
-  --secondary-foreground: oklch(0.985 0 0);
-  --muted: oklch(0.269 0 0);
-  --muted-foreground: oklch(0.708 0 0);
-  --accent: oklch(0.269 0 0);
-  --accent-foreground: oklch(0.985 0 0);
-  --destructive: oklch(0.704 0.191 22.216);
-  --border: oklch(1 0 0 / 10%);
-  --input: oklch(1 0 0 / 15%);
-  --ring: oklch(0.556 0 0);
-  --chart-1: oklch(0.488 0.243 264.376);
-  --chart-2: oklch(0.696 0.17 162.48);
-  --chart-3: oklch(0.769 0.188 70.08);
-  --chart-4: oklch(0.627 0.265 303.9);
-  --chart-5: oklch(0.645 0.246 16.439);
-  --sidebar: oklch(0.205 0 0);
-  --sidebar-foreground: oklch(0.985 0 0);
-  --sidebar-primary: oklch(0.488 0.243 264.376);
-  --sidebar-primary-foreground: oklch(0.985 0 0);
-  --sidebar-accent: oklch(0.269 0 0);
-  --sidebar-accent-foreground: oklch(0.985 0 0);
-  --sidebar-border: oklch(1 0 0 / 10%);
-  --sidebar-ring: oklch(0.556 0 0);
+  /* The app is permanently terminal-dark — .dark maps to the same tokens. */
+  --background:           var(--term-bg);
+  --foreground:           var(--term-text);
+  --card:                 var(--term-surface);
+  --card-foreground:      var(--term-text);
+  --popover:              var(--term-surface);
+  --popover-foreground:   var(--term-text);
+  --primary:              var(--term-accent);
+  --primary-foreground:   #000000;
+  --secondary:            var(--term-surface-hi);
+  --secondary-foreground: var(--term-text);
+  --muted:                var(--term-bg-elev);
+  --muted-foreground:     var(--term-text-dim);
+  --accent:               var(--term-accent-fade);
+  --accent-foreground:    var(--term-accent);
+  --destructive:          var(--term-danger);
+  --border:               var(--term-border);
+  --input:                var(--term-border);
+  --ring:                 var(--term-accent);
+  --chart-1:              var(--term-accent);
+  --chart-2:              #ff5cf2;
+  --chart-3:              var(--term-danger);
+  --chart-4:              var(--term-info);
+  --chart-5:              var(--term-ok);
+  --sidebar:                    var(--term-bg-elev);
+  --sidebar-foreground:         var(--term-text);
+  --sidebar-primary:            var(--term-accent);
+  --sidebar-primary-foreground: #000000;
+  --sidebar-accent:             var(--term-accent-fade);
+  --sidebar-accent-foreground:  var(--term-accent);
+  --sidebar-border:             var(--term-border);
+  --sidebar-ring:               var(--term-accent);
 }
 
 @layer base {
@@ -141,7 +176,393 @@
   }
   body {
     @apply bg-background text-foreground min-h-screen;
+    font-family: var(--mono);
+    font-feature-settings: 'ss01', 'cv11', 'tnum';
+    text-rendering: optimizeLegibility;
+    background-image: radial-gradient(
+      rgba(255, 176, 32, calc(0.05 * var(--grid-on))) 1px,
+      transparent 1px
+    );
+    background-size: 22px 22px;
+    background-position: 0 0;
   }
+  ::selection {
+    background: var(--term-accent);
+    color: #000;
+  }
+}
+
+/* =========================================================
+   Terminal design utilities — post4me aesthetic
+   ========================================================= */
+
+/* Section heading with `//` prefix */
+.section-title {
+  font-size: 11px;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--term-text-dim);
+  font-weight: 500;
+  margin: 0;
+}
+.section-title::before {
+  content: '// ';
+  color: var(--term-accent);
+}
+
+/* Blinking cursor (next to page titles) */
+.cursor {
+  display: inline-block;
+  width: 7px;
+  height: 14px;
+  background: var(--term-accent);
+  margin-left: 4px;
+  vertical-align: -2px;
+  animation: term-blink 1s steps(2) infinite;
+}
+@keyframes term-blink {
+  50% { opacity: 0; }
+}
+
+/* Pulsing brand dot */
+.brand-dot {
+  width: 8px;
+  height: 8px;
+  background: var(--term-accent);
+  box-shadow: 0 0 12px var(--term-accent);
+  animation: term-pulse 2s ease-in-out infinite;
+  display: inline-block;
+}
+@keyframes term-pulse {
+  0%, 100% { opacity: 1; }
+  50%      { opacity: 0.45; }
+}
+
+/* Bracketed terminal badge — [POSTED] etc. */
+.term-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  font-family: var(--mono);
+  font-size: 10px;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  padding: 2px 7px;
+  border: 1px solid currentColor;
+  background: transparent;
+  white-space: nowrap;
+  font-weight: 500;
+  line-height: 1.6;
+}
+.term-badge-posted    { color: var(--term-ok); }
+.term-badge-pending   { color: var(--term-warn); }
+.term-badge-failed    { color: var(--term-danger); }
+.term-badge-draft     { color: var(--term-text-dim); }
+.term-badge-scheduled { color: var(--term-info); }
+.term-badge-accent    { color: var(--term-accent); }
+
+/* Terminal command-line topbar */
+.term-topbar {
+  position: sticky;
+  top: 0;
+  z-index: 50;
+  background: rgba(10, 12, 10, 0.85);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  border-bottom: 1px solid var(--term-border);
+}
+.term-topbar-inner {
+  max-width: 1440px;
+  margin: 0 auto;
+  padding: 12px 32px;
+  display: flex;
+  align-items: center;
+  gap: 24px;
+}
+@media (max-width: 720px) {
+  .term-topbar-inner { padding: 10px 16px; gap: 12px; }
+}
+
+.term-brand {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-family: var(--mono);
+  font-weight: 700;
+  letter-spacing: -0.02em;
+  font-size: 14px;
+  color: var(--term-text);
+  white-space: nowrap;
+}
+.term-brand-bracket { color: var(--term-text-faint); }
+
+.term-nav {
+  display: flex;
+  gap: 2px;
+  flex: 1;
+  overflow-x: auto;
+  scrollbar-width: none;
+}
+.term-nav::-webkit-scrollbar { display: none; }
+
+.term-nav-link {
+  padding: 6px 10px;
+  font-family: var(--mono);
+  font-size: 12px;
+  color: var(--term-text-dim);
+  text-decoration: none;
+  white-space: nowrap;
+  border: 1px solid transparent;
+  transition: color 80ms;
+  cursor: pointer;
+  background: none;
+  text-transform: lowercase;
+}
+.term-nav-link:hover { color: var(--term-text); }
+.term-nav-link.active {
+  color: var(--term-accent);
+  border-color: var(--term-border);
+  background: var(--term-accent-fade);
+}
+.term-nav-link.active::before {
+  content: '» ';
+  color: var(--term-accent);
+}
+
+.term-topbar-meta {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  font-family: var(--mono);
+  font-size: 11px;
+  color: var(--term-text-faint);
+  white-space: nowrap;
+}
+.term-topbar-meta .sep { color: var(--term-text-ghost); }
+.term-topbar-meta .user {
+  color: var(--term-text-dim);
+  padding: 4px 8px;
+  border: 1px solid var(--term-border);
+}
+@media (max-width: 900px) {
+  .term-topbar-meta .clock,
+  .term-topbar-meta .sep { display: none; }
+}
+
+/* Tabular numerals utility */
+.tnum { font-variant-numeric: tabular-nums; }
+
+/* Fixed status footer */
+.term-statusbar {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  background: var(--term-bg-elev);
+  border-top: 1px solid var(--term-border);
+  padding: 6px 18px;
+  font-family: var(--mono);
+  font-size: 10px;
+  color: var(--term-text-faint);
+  letter-spacing: 0.06em;
+  display: flex;
+  gap: 18px;
+  align-items: center;
+  z-index: 40;
+}
+.term-statusbar .ok  { color: var(--term-ok); }
+.term-statusbar .acc { color: var(--term-accent); }
+.term-statusbar .sep { color: var(--term-text-ghost); }
+
+/* Keyboard hint pill */
+.kbd {
+  display: inline-block;
+  padding: 1px 5px;
+  font-family: var(--mono);
+  font-size: 10px;
+  background: var(--term-bg-elev);
+  border: 1px solid var(--term-border);
+  color: var(--term-text-dim);
+  line-height: 1.4;
+}
+
+/* Info / warn banner with bracketed prefix */
+.term-banner {
+  border: 1px solid var(--term-border);
+  background: var(--term-bg-elev);
+  padding: 10px 14px;
+  font-family: var(--mono);
+  font-size: 12px;
+  color: var(--term-text-dim);
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+.term-banner::before {
+  content: "[i]";
+  color: var(--term-accent);
+}
+.term-banner.warn::before { content: "[!]"; color: var(--term-warn); }
+.term-banner.ok::before   { content: "[+]"; color: var(--term-ok); }
+.term-banner.err::before  { content: "[x]"; color: var(--term-danger); }
+
+/* Dashed empty state */
+.term-empty {
+  text-align: center;
+  padding: 48px 16px;
+  color: var(--term-text-faint);
+  font-family: var(--mono);
+  font-size: 12px;
+  border: 1px dashed var(--term-border);
+}
+
+/* Inline tag pill */
+.tag-pill {
+  display: inline-block;
+  padding: 2px 6px;
+  font-family: var(--mono);
+  font-size: 11px;
+  border: 1px solid var(--term-border);
+  margin-right: 4px;
+  color: var(--term-text-dim);
+}
+
+/* Chart legend */
+.chart-legend {
+  display: flex;
+  align-items: center;
+  gap: 18px;
+  margin-bottom: 14px;
+  flex-wrap: wrap;
+}
+.chart-legend-item {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  font-family: var(--mono);
+  font-size: 11px;
+  color: var(--term-text-dim);
+}
+.chart-legend-dot {
+  display: inline-block;
+  width: 10px;
+  height: 10px;
+  background: var(--term-accent);
+}
+.chart-stat {
+  display: flex;
+  align-items: baseline;
+  gap: 8px;
+  margin-left: auto;
+}
+.chart-stat-value {
+  font-family: var(--mono);
+  font-size: 28px;
+  font-weight: 600;
+  letter-spacing: -0.02em;
+  color: var(--term-text);
+  font-variant-numeric: tabular-nums;
+  line-height: 1;
+}
+
+/* Metric card */
+.metric {
+  padding: 18px 20px 20px;
+  background: var(--term-surface);
+  border: 1px solid var(--term-border);
+  position: relative;
+  overflow: hidden;
+  font-family: var(--mono);
+}
+.metric:hover { border-color: var(--term-border-hi); }
+.metric-label {
+  font-size: 10px;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--term-text-faint);
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+.metric-label::before {
+  content: "$";
+  color: var(--term-accent);
+}
+.metric-value {
+  font-size: 36px;
+  font-weight: 600;
+  letter-spacing: -0.03em;
+  margin-top: 10px;
+  color: var(--term-text);
+  font-variant-numeric: tabular-nums;
+  line-height: 1;
+}
+.metric-delta {
+  margin-top: 10px;
+  font-size: 11px;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  color: var(--term-text-dim);
+}
+.metric-delta.up   { color: var(--term-ok); }
+.metric-delta.down { color: var(--term-danger); }
+.metric-delta-bar {
+  display: flex;
+  gap: 2px;
+  margin-top: 14px;
+  height: 18px;
+  align-items: flex-end;
+}
+.metric-delta-bar > span {
+  flex: 1;
+  background: var(--term-accent-soft);
+}
+.metric-delta-bar > span.hi { background: var(--term-accent); }
+
+/* Phone preview frame (post composer) */
+.phone {
+  width: 100%;
+  max-width: 260px;
+  margin: 0 auto;
+  border: 1px solid var(--term-border-hi);
+  background: #000;
+  aspect-ratio: 9 / 16;
+  display: flex;
+  flex-direction: column;
+  font-family: var(--mono);
+}
+.phone-bar {
+  height: 18px;
+  border-bottom: 1px solid var(--term-border);
+  font-size: 9px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0 8px;
+  color: var(--term-text-faint);
+}
+.phone-body {
+  flex: 1;
+  color: var(--term-text);
+  font-size: 11px;
+  line-height: 1.5;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+}
+.phone-thumb {
+  background:
+    repeating-linear-gradient(45deg, transparent 0 6px, rgba(255,176,32,0.05) 6px 7px),
+    var(--term-bg-elev);
+  border: 0;
+  flex: 0 0 60%;
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--term-text-faint);
+  font-size: 10px;
 }
 
 /* Dark themed UserButton in mobile nav */

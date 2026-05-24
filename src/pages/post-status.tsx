@@ -148,14 +148,19 @@ export function PostStatus() {
 
       {/* Status Header */}
       <div className="mb-8">
-        <div className="flex items-center gap-3 mb-2">
-          <h1 className="text-2xl font-bold tracking-tight">Post Status</h1>
+        <div className="text-[11px] tracking-[0.12em] uppercase text-[var(--term-text-faint)] font-mono">
+          $ molars status {data.id}
+        </div>
+        <div className="flex items-center gap-3 mt-2 mb-2 flex-wrap">
+          <h1 className="font-mono text-2xl md:text-[28px] font-semibold tracking-tight lowercase">
+            status<span className="cursor" aria-hidden />
+          </h1>
           <Badge variant={statusConfig.variant} className={statusConfig.className}>
             <StatusIcon className="size-3" />
             {statusConfig.label}
           </Badge>
         </div>
-        <p className="text-muted-foreground">
+        <p className="text-muted-foreground text-sm">
           {data.status === 'pending' && (
             <>
               <Loader2 className="inline-block mr-2 size-4 animate-spin" />
@@ -177,20 +182,20 @@ export function PostStatus() {
         <CardContent className="space-y-6">
           {/* Hook Text */}
           <div>
-            <h3 className="text-sm font-medium text-muted-foreground mb-2">Hook Text</h3>
+            <h3 className="section-title mb-2">Hook Text</h3>
             <p className="text-foreground">{data.hook.text}</p>
           </div>
 
           {/* Caption */}
           <div>
-            <h3 className="text-sm font-medium text-muted-foreground mb-2">Caption</h3>
+            <h3 className="section-title mb-2">Caption</h3>
             <p className="text-foreground whitespace-pre-wrap">{data.caption.text}</p>
           </div>
 
           {/* Hashtags */}
           {data.hashtags.length > 0 && (
             <div>
-              <h3 className="text-sm font-medium text-muted-foreground mb-2">Hashtags</h3>
+              <h3 className="section-title mb-2">Hashtags</h3>
               <div className="flex flex-wrap gap-2">
                 {data.hashtags.map((tag, index) => (
                   <Badge key={index} variant="secondary">

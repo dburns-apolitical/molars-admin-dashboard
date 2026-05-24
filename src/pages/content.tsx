@@ -226,10 +226,15 @@ export function Content() {
         </Button>
       </div>
 
-      <div className="flex items-center justify-between mb-8">
+      <div className="flex items-end justify-between mb-8 gap-4 flex-wrap">
         <div>
-          <h1 className="text-2xl font-bold tracking-tight">Content Management</h1>
-          <p className="text-muted-foreground">Manage hooks and captions used in posts.</p>
+          <div className="text-[11px] tracking-[0.12em] uppercase text-[var(--term-text-faint)] font-mono">
+            $ molars list --table
+          </div>
+          <h1 className="font-mono text-2xl md:text-[28px] font-semibold tracking-tight lowercase mt-2">
+            content<span className="cursor" aria-hidden />
+          </h1>
+          <p className="text-muted-foreground text-sm mt-1">Manage hooks and captions used in posts.</p>
         </div>
         <AccountFilter />
       </div>
@@ -253,7 +258,7 @@ export function Content() {
           <TabsContent value="hooks">
             <Card className="mt-4">
               <CardHeader>
-                <CardTitle className="text-lg">Hooks</CardTitle>
+                <CardTitle className="section-title">Hooks</CardTitle>
               </CardHeader>
               <CardContent>
                 {isLoading ? (
@@ -279,7 +284,7 @@ export function Content() {
           <TabsContent value="captions">
             <Card className="mt-4">
               <CardHeader>
-                <CardTitle className="text-lg">Captions</CardTitle>
+                <CardTitle className="section-title">Captions</CardTitle>
               </CardHeader>
               <CardContent>
                 {isLoading ? (

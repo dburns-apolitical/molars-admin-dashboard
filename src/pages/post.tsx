@@ -152,19 +152,28 @@ export function Post() {
 
   const isFormDisabled = !selectedAccountId || status === 'loading';
 
+  const selectedAccount = accounts.find((a) => String(a.id) === selectedAccountId);
+  const previewHashtags = hashtags.slice(0, 4);
+
   return (
-    <div className="max-w-2xl mx-auto">
+    <div className="max-w-6xl mx-auto">
       <div className="mb-8">
-        <h1 className="text-2xl font-bold tracking-tight">Post Reel</h1>
-        <p className="text-muted-foreground mt-2">
+        <div className="text-[11px] tracking-[0.12em] uppercase text-[var(--term-text-faint)] font-mono">
+          $ molars new --interactive
+        </div>
+        <h1 className="font-mono text-2xl md:text-[28px] font-semibold tracking-tight lowercase mt-2">
+          compose<span className="cursor" aria-hidden />
+        </h1>
+        <p className="text-muted-foreground mt-2 text-sm">
           Create a new reel post. Leave fields empty to use randomly generated content.
         </p>
       </div>
 
-      <Card>
+      <div className="grid gap-4 lg:grid-cols-[1fr_320px]">
+        <Card>
         <form onSubmit={handleSubmit}>
           <CardHeader>
-            <CardTitle>New Reel</CardTitle>
+            <CardTitle className="section-title">post.config</CardTitle>
             <CardDescription>
               Configure your reel's caption, hook text, and hashtags
             </CardDescription>
@@ -290,41 +299,124 @@ export function Post() {
 
             {/* Error Message */}
             {status === 'error' && errorMessage && (
-              <div className="flex items-center gap-2 p-3 rounded-md bg-destructive/10 text-destructive border border-destructive/20">
+              <div className="flex items-center gap-2 p-3 bg-destructive/10 text-destructive border border-destructive/40">
                 <AlertCircle className="size-4 shrink-0" />
                 <span className="text-sm">{errorMessage}</span>
               </div>
             )}
           </CardContent>
 
-          <CardFooter className="flex justify-between border-t pt-6">
-            <Button
-              type="button"
-              variant="outline"
-              onClick={resetForm}
-              disabled={status === 'loading'}
-            >
-              Clear
-            </Button>
-            <Button
-              type="submit"
-              disabled={isFormDisabled}
-            >
-              {status === 'loading' ? (
-                <>
-                  <Loader2 className="animate-spin" />
-                  Posting...
-                </>
-              ) : (
-                <>
-                  <Send />
-                  Post Reel
-                </>
-              )}
-            </Button>
+          <CardFooter className="flex justify-between items-center border-t border-dashed pt-6 gap-4 flex-wrap">
+            <div className="flex items-center gap-2">
+              <Button
+                type="button"
+                variant="outline"
+                onClick={resetForm}
+                disabled={status === 'loading'}
+              >
+                Clear
+              </Button>
+              <Button
+                type="submit"
+                disabled={isFormDisabled}
+              >
+                {status === 'loading' ? (
+                  <>
+                    <Loader2 className="animate-spin" />
+                    Posting...
+                  </>
+                ) : (
+                  <>
+                    <Send />
+                    Post Reel
+                  </>
+                )}
+              </Button>
+            </div>
+            <span className="text-[11px] text-[var(--term-text-faint)] font-mono">
+              <span className="kbd">⌘</span> <span className="kbd">↵</span> to ship
+            </span>
           </CardFooter>
         </form>
-      </Card>
+        </Card>
+
+        {/* Right column — preview + AI suggest */}
+        <div className="space-y-4">
+          <Card>
+            <CardHeader className="border-b border-dashed">
+              <CardTitle className="section-title flex items-center justify-between gap-2">
+                <span>preview</span>
+                <span className="text-[var(--term-text-faint)] normal-case font-normal">9:16</span>
+              </CardTitle>
+            </CardHeader>
+            <CardContent className="pt-4 pb-4">
+              <div className="phone">
+                <div className="phone-bar">
+                  <span>00:14</span>
+                  <span>● live</span>
+                </div>
+                <div className="phone-body">
+                  <div className="phone-thumb">
+                    {videoTitle === 'random' ? 'video preview' : videoTitle}
+                  </div>
+                  <div className="p-3">
+                    <div className="text-primary text-[12px] font-semibold mb-1.5 leading-snug break-words">
+                      {hookText || 'your hook appears here'}
+                    </div>
+                    <div className="text-muted-foreground text-[10px] leading-relaxed break-words line-clamp-3">
+                      {caption || 'caption preview…'}
+                    </div>
+                    {previewHashtags.length > 0 && (
+                      <div className="mt-2">
+                        {previewHashtags.map((t, i) => (
+                          <span key={i} className="tag-pill" style={{ fontSize: 9 }}>
+                            #{t}
+                          </span>
+                        ))}
+                      </div>
+                    )}
+                  </div>
+                </div>
+              </div>
+              {selectedAccount && (
+                <div className="text-[10px] text-[var(--term-text-faint)] text-center mt-3 font-mono uppercase tracking-[0.12em]">
+                  → [{selectedAccount.name}]
+                </div>
+              )}
+            </CardContent>
+          </Card>
+
+          {hookSuggestions.length > 0 && (
+            <Card>
+              <CardHeader className="border-b border-dashed">
+                <CardTitle className="section-title flex items-center justify-between gap-2">
+                  <span>ai_suggest</span>
+                  <span className="text-[var(--term-text-faint)] normal-case font-normal">hooks</span>
+                </CardTitle>
+              </CardHeader>
+              <CardContent className="pt-3 pb-4">
+                <div className="text-muted-foreground text-[11px] mb-2.5 font-mono">
+                  based on recent top performers:
+                </div>
+                <div className="flex flex-col gap-1.5">
+                  {hookSuggestions.slice(0, 3).map((s, i) => (
+                    <button
+                      key={i}
+                      type="button"
+                      onClick={() => setHookText(s)}
+                      disabled={isFormDisabled}
+                      className="flex items-center justify-between gap-2 text-left text-[12px] font-mono px-3 py-2 border border-border bg-[var(--term-bg-elev)] hover:border-[var(--term-border-hi)] transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                    >
+                      <span className="truncate flex-1">" {s} "</span>
+                      <span className="text-primary text-[10px] shrink-0">use →</span>
+                    </button>
+                  ))}
+                </div>
+              </CardContent>
+            </Card>
+          )}
+        </div>
+      </div>
     </div>
   );
 }

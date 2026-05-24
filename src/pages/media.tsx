@@ -49,10 +49,15 @@ export function Media() {
 
   return (
     <div className="max-w-5xl mx-auto">
-      <div className="flex items-center justify-between mb-8">
+      <div className="flex items-end justify-between mb-8 gap-4 flex-wrap">
         <div>
-          <h1 className="text-2xl font-bold tracking-tight">Media</h1>
-          <p className="text-muted-foreground">Preview videos available to each account.</p>
+          <div className="text-[11px] tracking-[0.12em] uppercase text-[var(--term-text-faint)] font-mono">
+            $ molars ls /media
+          </div>
+          <h1 className="font-mono text-2xl md:text-[28px] font-semibold tracking-tight lowercase mt-2">
+            media<span className="cursor" aria-hidden />
+          </h1>
+          <p className="text-muted-foreground text-sm mt-1">Preview videos available to each account.</p>
         </div>
         <AccountFilter />
       </div>
@@ -100,7 +105,7 @@ export function Media() {
                           src={item.url}
                           preload="metadata"
                           muted
-                          className="aspect-[9/16] w-20 rounded bg-muted object-cover"
+                          className="aspect-[9/16] w-20 bg-muted object-cover border border-border"
                         />
                       </TableCell>
                       <TableCell className="font-mono text-sm">

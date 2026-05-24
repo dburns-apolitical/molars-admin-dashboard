@@ -43,7 +43,7 @@ export function MediaPreviewModal({ media, open, onOpenChange }: MediaPreviewMod
               src={media.url}
               controls
               playsInline
-              className="w-full rounded aspect-[9/16] bg-black object-contain"
+              className="w-full aspect-[9/16] bg-black object-contain border border-border"
             />
           </>
         )}

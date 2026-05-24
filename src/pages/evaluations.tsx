@@ -33,7 +33,7 @@ export function Evaluations() {
         <p className="text-destructive">Error loading evaluations: {error.message}</p>
         <button
           onClick={refetch}
-          className="px-4 py-2 bg-primary text-primary-foreground rounded-md hover:bg-primary/90 transition-colors"
+          className="px-4 py-2 bg-primary text-primary-foreground font-mono lowercase tracking-wider text-xs hover:bg-[#ffc04a] transition-colors"
         >
           Retry
         </button>
@@ -43,11 +43,18 @@ export function Evaluations() {
 
   return (
     <div className="space-y-6">
-      <h1 className="text-2xl font-bold tracking-tight">Evaluations</h1>
+      <div>
+        <div className="text-[11px] tracking-[0.12em] uppercase text-[var(--term-text-faint)] font-mono">
+          $ molars evals --history
+        </div>
+        <h1 className="font-mono text-2xl md:text-[28px] font-semibold tracking-tight lowercase mt-2">
+          evaluations<span className="cursor" aria-hidden />
+        </h1>
+      </div>
 
       <Card>
         <CardHeader>
-          <CardTitle className="text-base">Agent Evaluations</CardTitle>
+          <CardTitle className="section-title">Agent Evaluations</CardTitle>
         </CardHeader>
         <CardContent>
           {isLoading ? (
