@@ -347,7 +347,7 @@ export function Home() {
 
             {/* Impressions Overview */}
             <section>
-                <div className="flex items-center justify-between mb-8">
+                <div className="flex items-center justify-between mb-4">
                     <h2 className="section-title">Impressions Overview</h2>
                     <AccountFilter />
                 </div>
@@ -360,6 +360,7 @@ export function Home() {
             {/* Views Overview */}
             <section>
                 <h2 className="section-title mb-8">Views Overview</h2>
+                <div className="h-5"/>
                 <ViewsChart
                     data={viewsHistoryData}
                     isLoading={viewsHistoryLoading}
@@ -370,6 +371,7 @@ export function Home() {
             {/* Leaderboards */}
             <section>
                 <h2 className="section-title mb-5">Leaderboards</h2>
+                <div className="h-5"/>
                 <div className="grid gap-4 md:grid-cols-2">
                     <LeaderboardCard
                         title="Posts by User"
@@ -445,6 +447,7 @@ export function Home() {
             {isLoading ? (
                 <section>
                     <h2 className="section-title mb-8">Latest Evaluation</h2>
+                    <div className="h-5"/>
                     <Card>
                         <CardContent className="pt-6 space-y-2">
                             <Skeleton className="h-4 w-full" />
@@ -485,6 +488,7 @@ export function Home() {
             {/* Post Count Metrics */}
             <section>
                 <h2 className="section-title mb-8">Post Volume</h2>
+                <div className="h-5"/>
                 <div className="grid gap-4 md:grid-cols-3">
                     {isLoading ? (
                         <>
@@ -517,6 +521,7 @@ export function Home() {
             {/* Top Posts */}
             <section>
                 <h2 className="section-title mb-8">Top Performing Posts</h2>
+                <div className="h-5"/>
                 <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
                     {isLoading ? (
                         <>
@@ -539,6 +544,7 @@ export function Home() {
             {/* Rankings Section */}
             <section>
                 <h2 className="section-title mb-8">Performance Rankings</h2>
+                <div className="h-5"/>
                 {isLoading ? (
                     <Card>
                         <CardContent className="p-6">
